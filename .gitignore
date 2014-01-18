@@ -1,0 +1,17 @@
+.pkg
+Gemfile.lock
+vendor
+pkg
+spec/fixtures
+spec/lib
+.rspec_system
+.bundle
+# Editor junk
+*.swp
+*.bkp
+*.bak
+*~
+.tmp/
+.yardoc/
+doc/
+coverage/
