@@ -1,4 +1,5 @@
 2014-01-19 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * make the module dependent on ptomulik-portsutil >= 0.0.3
   * comment out defaultfor :operatingsystem => freebsd
   * fixed documentation in README.md
 2014-01-18 Pawel Tomulik <ptomulik@meil.pw.edu.pl>

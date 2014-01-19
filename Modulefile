@@ -8,5 +8,5 @@ description 'Ports provider for package resource type'
 project_page 'https://gitbub.com/ptomulik/puppet-portsng'
 
 ## Add dependencies, if any:
-dependency 'ptomulik/portsutil', '>= 0.0.2'
+dependency 'ptomulik/portsutil', '>= 0.0.3'
 dependency 'ptomulik/backport_package_settings', '>= 0.0.1'
