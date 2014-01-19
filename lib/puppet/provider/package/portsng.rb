@@ -76,7 +76,8 @@ Puppet::Type.type(:package).provide :portsng, :parent => :freebsd, :source => :f
            :portversion   => "/usr/local/sbin/portversion",
            :make          => "/usr/bin/make"
 
-  defaultfor :operatingsystem => :freebsd
+# Ok, don't change current defaults, as this is just a module.
+#  defaultfor :operatingsystem => :freebsd
 
   has_feature :install_options
   has_feature :uninstall_options

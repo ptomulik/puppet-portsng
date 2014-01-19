@@ -1,4 +1,5 @@
 2014-01-19 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * comment out defaultfor :operatingsystem => freebsd
   * fixed documentation in README.md
 2014-01-18 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.0.2
