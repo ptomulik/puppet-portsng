@@ -8,8 +8,9 @@ dir = File.expand_path(File.join(File.dirname(__FILE__), '../../../../../backpor
 $LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir)
 
 require 'puppet/backport/type/package/package_settings'
+require 'puppet/provider/package'
 
-Puppet::Type.type(:package).provide :portsng, :parent => :freebsd, :source => :freebsd do
+Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Package do
   desc "Support for FreeBSD's ports. Note that this, too, mixes packages and ports.
 
   `install_options` are passed to `portupgrade` command when installing,
