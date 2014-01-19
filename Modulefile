@@ -1,5 +1,5 @@
 name    'ptomulik-portsng'
-version '0.0.3'
+version '0.1.0'
 source 'git://github.com/ptomulik/puppet-portsng.git'
 author 'ptomulik'
 license 'Apache License, Version 2.0'
