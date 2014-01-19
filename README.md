@@ -119,15 +119,21 @@ You may need to enable __pluginsync__ in your `puppet.conf`.
 
 ### Beginning with portsng
 
-Its usage is essentially same as for the original *ports* provider. Here I
-just put some examples specific to new features.
+Its usage is essentially same as for the original *ports* provider. Just select
+*portsng* as the package provider
+
+```puppet
+Package { provider => portsng }
+```
+
+Below I just put some examples specific to new features of *portsng*.
 
 #### Example 1 - using *package_settings*
 
 Ensure that www/apache22 is installed without SUEXEC:
 
 ```puppet
-packagex { 'www/apache22': 
+package { 'www/apache22': 
   package_settings => {'SUEXEC' => true}
 }
 ```
@@ -141,7 +147,7 @@ all packages that depend on the package being uninstalled. When using ports
 with old *pkg* package manager one would write in its manifest:
 
 ```puppet
-packagex { 'www/apache22':
+package { 'www/apache22':
   ensure => absent,
   uninstall_options => ['-r'] 
 }
@@ -150,7 +156,7 @@ packagex { 'www/apache22':
 For *pkgng* one has to write:
 
 ```puppet
-packagex { 'www/apache22':
+package { 'www/apache22':
   ensure => absent,
   uninstall_options => ['-R','-y'] 
 }
@@ -167,7 +173,7 @@ Let's say we want to install precompiled package, if available (`-P` flag).
 Write the following manifest:
 
 ```puppet
-packagex { 'www/apache22':
+package { 'www/apache22':
   ensure => present,
   install_options => ['-P', '-M', {'BATCH' => 'yes'}]
 }

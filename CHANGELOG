@@ -1,3 +1,5 @@
+2014-01-19 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+  * fixed documentation in README.md
 2014-01-18 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.0.2
   * make the module dependent on ptomulik-portsutil >= 0.0.2
