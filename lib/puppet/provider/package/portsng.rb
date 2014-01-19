@@ -66,7 +66,7 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
   if pkgng_active? :pkg => '/usr/local/sbin/pkg'
     commands :portuninstall => '/usr/local/sbin/pkg',
              :pkg => '/usr/local/sbin/pkg'
-    self::DEFAULT_UNINSTALL_OPTIONS =  %w{-y}
+    self::DEFAULT_UNINSTALL_OPTIONS =  %w{delete -y}
   else
     commands :portuninstall => '/usr/local/sbin/pkg_deinstall'
     self::DEFAULT_UNINSTALL_OPTIONS =  %w{}
