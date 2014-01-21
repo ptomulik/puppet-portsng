@@ -195,7 +195,7 @@ documentation.
 ## Limitations
 
 * If there are several ports installed with same *portname* - for example
-  `docbook` - then `puppet resource packagex docbook` will list only one of
+  `docbook` - then `puppet resource package docbook` will list only one of
   them (the last one from `portversion`s list - usually the most recent). It is
   so, because `portsng` uses *portorigins* to identify its instances (as `name`
   paramateter). None of the existing `instances` is identified by `puppet` as
@@ -211,5 +211,5 @@ documentation.
 
 ## Development
 The project is held at github:
-* [https://github.com/ptomulik/puppet-packagex](https://github.com/ptomulik/puppet-portsng)
+* [https://github.com/ptomulik/puppet-portsng](https://github.com/ptomulik/puppet-portsng)
 Issue reports, patches, pull requests are welcome!
