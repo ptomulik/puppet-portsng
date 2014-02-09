@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/ptomulik/puppet-portsng.png?branch=master)](https://travis-ci.org/ptomulik/puppet-portsng)
 [![Coverage Status](https://coveralls.io/repos/ptomulik/puppet-portsng/badge.png?branch=master)](https://coveralls.io/r/ptomulik/puppet-portsng?branch=master)
 
-####<a id="table-of-contents"></a>Table of Contents
+##<a id="table-of-contents"></a>Table of Contents
 
 1. [Overview](#overview)
 2. [Module Description](#module-description)
@@ -14,7 +14,7 @@
 4. [Limitations](#limitations)
 5. [Development](#development)
 
-##<a id="overview"></a> Overview
+##<a id="overview"></a>Overview
 
 This is a __ports__ provider for package resource.
 
@@ -76,6 +76,8 @@ separatelly check out-of-date status for installed packages. This version of
 *portsng* works with old *pkg* database as well as with *pkgng*, using
 *portversion*.
 
+[[Table of Contents](#table-of-contents)]
+
 ####<a id="freebsd-ports-collection-and-its-terminology"></a>FreeBSD ports collection and its terminology
 
 We use the following terminology when referring ports/packages:
@@ -89,6 +91,8 @@ We use the following terminology when referring ports/packages:
 See [http://www.freebsd.org/doc/en/books/porters-handbook/makefile-naming.html](http://www.freebsd.org/doc/en/books/porters-handbook/makefile-naming.html)
 
 Port *origins* are used as primary identifiers for *portsng* instances. It's recommended to use *portorigins* instead of *portnames* as package names in manifest files.
+
+[[Table of Contents](#table-of-contents)]
 
 ####<a id="freebsd-ports-collection-and-ambiguity-of-portnames"></a>FreeBSD ports collection and ambiguity of portnames
 
@@ -106,6 +110,8 @@ warning:
 Warning: Puppet::Type::Package::ProviderPorts: Found 3 ports named 'mysql-client': 'databases/mysql51-client', 'databases/mysql55-client', 'databases/mysql56-client'. Only 'databases/mysql56-client' will be ensured.
 ```
 
+[[Table of Contents](#table-of-contents)]
+
 ##<a id="setup"></a>Setup
 
 ###<a id="what-portsng-affects"></a>What portsng affects
@@ -113,9 +119,13 @@ Warning: Puppet::Type::Package::ProviderPorts: Found 3 ports named 'mysql-client
 * installs, upgrades, reinstalls and uninstalls packages,
 * modifies FreeBSD ports options' files `/var/db/ports/*/options.local`,
 
+[[Table of Contents](#table-of-contents)]
+
 ###<a id="setup-requirements"></a>Setup Requirements
 
 You may need to enable __pluginsync__ in your `puppet.conf`.
+
+[[Table of Contents](#table-of-contents)]
 
 ###<a id="beginning-with-portsng"></a>Beginning with portsng
 
@@ -137,6 +147,8 @@ package { 'www/apache22':
   package_settings => {'SUEXEC' => true}
 }
 ```
+
+[[Table of Contents](#table-of-contents)]
 
 ####<a id="example-2---using-uninstall_options-to-cope-with-dependency-problems"></a> Example 2 - using *uninstall_options* to cope with dependency problems
 
@@ -161,6 +173,8 @@ package { 'www/apache22':
   uninstall_options => ['-R','-y'] 
 }
 ```
+
+[[Table of Contents](#table-of-contents)]
 
 ####<a id="example-3---using-install_options"></a>Example 3 - using *install_options*
 
@@ -192,6 +206,8 @@ Note, that the *portsng* provider adds some flags by its own (`-N` in the above
 example). What is added/removed is preciselly stated in provider's generated
 documentation.
 
+[[Table of Contents](#table-of-contents)]
+
 ##<a id="limitations"></a>Limitations
 
 * If there are several ports installed with same *portname* - for example
@@ -208,6 +224,8 @@ documentation.
   hope this changes in not so far future, see status of the [request for freebsd
   prefab images](https://github.com/puppetlabs/rspec-system/issues/52).
 
+
+[[Table of Contents](#table-of-contents)]
 
 ##<a id="development"></a>Development
 The project is held at github:
