@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/ptomulik/puppet-portsng.png?branch=master)](https://travis-ci.org/ptomulik/puppet-portsng)
 [![Coverage Status](https://coveralls.io/repos/ptomulik/puppet-portsng/badge.png?branch=master)](https://coveralls.io/r/ptomulik/puppet-portsng?branch=master)
 
-#### Table of Contents
+####<a id="table-of-contents"></a>Table of Contents
 
 1. [Overview](#overview)
 2. [Module Description](#module-description)
@@ -14,11 +14,11 @@
 4. [Limitations](#limitations)
 5. [Development](#development)
 
-## Overview
+##<a id="overview"></a> Overview
 
 This is a __ports__ provider for package resource.
 
-## Module Description
+##<a id="module-description"></a>Module Description
 
 The module re-implements puppet's __ports__ provider adding some new features
 to it and fixing several existing issues. The new features include:
@@ -76,7 +76,7 @@ separatelly check out-of-date status for installed packages. This version of
 *portsng* works with old *pkg* database as well as with *pkgng*, using
 *portversion*.
 
-#### FreeBSD ports collection and its terminology
+####<a id="freebsd-ports-collection-and-its-terminology"></a>FreeBSD ports collection and its terminology
 
 We use the following terminology when referring ports/packages:
 
@@ -90,7 +90,7 @@ See [http://www.freebsd.org/doc/en/books/porters-handbook/makefile-naming.html](
 
 Port *origins* are used as primary identifiers for *portsng* instances. It's recommended to use *portorigins* instead of *portnames* as package names in manifest files.
 
-#### FreeBSD ports collection and ambiguity of portnames
+####<a id="freebsd-ports-collection-and-ambiguity-of-portnames"></a>FreeBSD ports collection and ambiguity of portnames
 
 Using *portnames* (e.g. `apache22`) as package names in manifests is allowed.
 The *portname*s, however, are ambiguous, meaning that port search may find
@@ -106,18 +106,18 @@ warning:
 Warning: Puppet::Type::Package::ProviderPorts: Found 3 ports named 'mysql-client': 'databases/mysql51-client', 'databases/mysql55-client', 'databases/mysql56-client'. Only 'databases/mysql56-client' will be ensured.
 ```
 
-## Setup
+##<a id="setup"></a>Setup
 
-### What portsng affects
+###<a id="what-portsng-affects"></a>What portsng affects
 
 * installs, upgrades, reinstalls and uninstalls packages,
 * modifies FreeBSD ports options' files `/var/db/ports/*/options.local`,
 
-### Setup Requirements
+###<a id="setup-requirements"></a>Setup Requirements
 
 You may need to enable __pluginsync__ in your `puppet.conf`.
 
-### Beginning with portsng
+###<a id="beginning-with-portsng"></a>Beginning with portsng
 
 Its usage is essentially same as for the original *ports* provider. Just select
 *portsng* as the package provider
@@ -128,9 +128,9 @@ Package { provider => portsng }
 
 Below I just put some examples specific to new features of *portsng*.
 
-#### Example 1 - using *package_settings*
+####<a id="example-1---using-package_settings"></a>Example 1 - using *package_settings*
 
-Ensure that www/apache22 is installed without SUEXEC:
+Ensure that www/apache22 is installed with SUEXEC:
 
 ```puppet
 package { 'www/apache22': 
@@ -138,7 +138,7 @@ package { 'www/apache22':
 }
 ```
 
-#### Example 2 - using *uninstall_options* to cope with dependency problems
+####<a id="example-2---using-uninstall_options-to-cope-with-dependency-problems"></a> Example 2 - using *uninstall_options* to cope with dependency problems
 
 Sometimes freebsd package manager refuses to uninstall a package due to
 dependency problems that would appear after deinstallation. In such situations
@@ -162,7 +162,7 @@ package { 'www/apache22':
 }
 ```
 
-#### Example 3 - using *install_options*
+####<a id="example-3---using-install_options"></a>Example 3 - using *install_options*
 
 The new *portsng* provider implements *install_options* feature. The flags
 provided via *install_options* are passed to `portupgrade` command when
@@ -192,7 +192,7 @@ Note, that the *portsng* provider adds some flags by its own (`-N` in the above
 example). What is added/removed is preciselly stated in provider's generated
 documentation.
 
-## Limitations
+##<a id="limitations"></a>Limitations
 
 * If there are several ports installed with same *portname* - for example
   `docbook` - then `puppet resource package docbook` will list only one of
@@ -209,7 +209,7 @@ documentation.
   prefab images](https://github.com/puppetlabs/rspec-system/issues/52).
 
 
-## Development
+##<a id="development"></a>Development
 The project is held at github:
 * [https://github.com/ptomulik/puppet-portsng](https://github.com/ptomulik/puppet-portsng)
 Issue reports, patches, pull requests are welcome!
