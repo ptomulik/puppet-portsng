@@ -1,4 +1,5 @@
 2016-05-19 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * release 0.1.5
   * mentioned dependency on port-maintenance-tools to README.md
   * added Vagrantfile for easy manual testing
   * release 0.1.4
