@@ -1,4 +1,6 @@
 2016-05-19 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * mentioned dependency on port-maintenance-tools to README.md
+  * added Vagrantfile for easy manual testing
   * release 0.1.4
   * removed deprecated Modulefile
   * add operatingsystem_support to metadata.json
