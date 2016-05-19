@@ -205,7 +205,7 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
       instance_variable_set("@#{key}".intern, record[key])
     end
   end
-  
+
   # needed by Puppet::Type::Package
   def package_settings_validate(opts)
     return true if not opts # options not defined

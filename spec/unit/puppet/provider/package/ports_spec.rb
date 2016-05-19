@@ -437,7 +437,7 @@ describe provider_class do
         end
       end
     end
-    context "when an ambiguous port name is used in manifest for uninstalled port" do 
+    context "when an ambiguous port name is used in manifest for uninstalled port" do
       ports = [
         [
           'mysql-client',

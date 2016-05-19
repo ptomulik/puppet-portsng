@@ -143,7 +143,7 @@ Below I just put some examples specific to new features of *portsng*.
 Ensure that www/apache22 is installed with SUEXEC:
 
 ```puppet
-package { 'www/apache22': 
+package { 'www/apache22':
   package_settings => {'SUEXEC' => true}
 }
 ```
@@ -161,7 +161,7 @@ with old *pkg* package manager one would write in its manifest:
 ```puppet
 package { 'www/apache22':
   ensure => absent,
-  uninstall_options => ['-r'] 
+  uninstall_options => ['-r']
 }
 ```
 
@@ -170,7 +170,7 @@ For *pkgng* one has to write:
 ```puppet
 package { 'www/apache22':
   ensure => absent,
-  uninstall_options => ['-R','-y'] 
+  uninstall_options => ['-R','-y']
 }
 ```
 
