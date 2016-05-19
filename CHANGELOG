@@ -1,10 +1,13 @@
-2014-02-09 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+2016-05-19 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * fixed .gitignore to be compatible with "puppet module build"
+  * removed trailing whitespaces from sources
+2014-02-09 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.1.2
   * added navigation links to table of contents in README.md
   * revised README.md
-2014-01-21 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+2014-01-21 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * fixed hyperlink text in README.md
-2014-01-19 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+2014-01-19 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.1.1
   * fixed wrong CLI syntax in uninstall action
   * release 0.1.0
@@ -13,7 +16,7 @@
   * make the module dependent on ptomulik-portsutil >= 0.0.3
   * comment out defaultfor :operatingsystem => freebsd
   * fixed documentation in README.md
-2014-01-18 Pawel Tomulik <ptomulik@meil.pw.edu.pl>
+2014-01-18 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.0.2
   * make the module dependent on ptomulik-portsutil >= 0.0.2
   * release 0.0.1
