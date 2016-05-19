@@ -1,4 +1,5 @@
 2016-05-19 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * added metadata.json to support puppet4
   * fixed .gitignore to be compatible with "puppet module build"
   * removed trailing whitespaces from sources
 2014-02-09 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
