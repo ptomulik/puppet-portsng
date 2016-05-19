@@ -1,11 +1,11 @@
 .pkg
 Gemfile.lock
-vendor
-pkg
-spec/fixtures
-spec/lib
+vendor/
+pkg/
+spec/fixtures/
+spec/lib/
 .rspec_system
-.bundle
+.bundle/
 # Editor junk
 *.swp
 *.bkp
