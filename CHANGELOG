@@ -1,4 +1,5 @@
 2016-05-19 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * release 0.1.4
   * removed deprecated Modulefile
   * add operatingsystem_support to metadata.json
   * release 0.1.3
