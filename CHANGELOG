@@ -1,4 +1,7 @@
 2016-05-19 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * corrected project_site url in metadata.json
+  * adjustments to Gemfile (bundle install now works on ruby 1.8 again)
+  * adjustments to .travis.yml (more versions to test)
   * release 0.1.5
   * mentioned dependency on port-maintenance-tools to README.md
   * added Vagrantfile for easy manual testing
