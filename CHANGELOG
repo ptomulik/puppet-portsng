@@ -1,4 +1,6 @@
 2016-05-19 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * removed deprecated Modulefile
+  * add operatingsystem_support to metadata.json
   * release 0.1.3
   * added metadata.json to support puppet4
   * fixed .gitignore to be compatible with "puppet module build"
