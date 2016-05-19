@@ -16,7 +16,9 @@
 
 ##<a id="overview"></a>Overview
 
-This is a __ports__ provider for package resource.
+This is a __ports__ provider for package resource. The module requires
+``port-maintenance-tools`` to be installed on the FreeBSD installation being
+managed ``portsng``.
 
 ##<a id="module-description"></a>Module Description
 
