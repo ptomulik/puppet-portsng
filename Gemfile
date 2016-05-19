@@ -1,7 +1,12 @@
 source 'https://rubygems.org'
 
 group :development, :test do
-  gem 'rake'
+  if RUBY_VERSION >= '1.9'
+    gem 'rake'
+  else
+    gem 'rake', "< 10.0"
+    gem 'highline', "< 1.7"
+  end
   gem 'rspec-puppet'
   gem 'puppetlabs_spec_helper',  :require => false
   gem 'rspec-system-puppet'

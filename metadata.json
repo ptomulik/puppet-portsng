@@ -5,7 +5,7 @@
   "summary": "Ports provider for package resource type",
   "license": "Apache License, Version 2.0",
   "source": "git://github.com/ptomulik/puppet-portsng.git",
-  "project_page": "https://gitbub.com/ptomulik/puppet-portsng",
+  "project_page": "https://github.com/ptomulik/puppet-portsng",
   "issues_url": "https://github.com/ptomulik/puppet-portsng/issues",
   "description": "Ports provider for package resource type",
   "dependencies": [
