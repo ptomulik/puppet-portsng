@@ -1,4 +1,5 @@
 2016-05-19 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * release 0.1.6
   * corrected project_site url in metadata.json
   * adjustments to Gemfile (bundle install now works on ruby 1.8 again)
   * adjustments to .travis.yml (more versions to test)
