@@ -11,5 +11,8 @@
   "dependencies": [
     {"name":"ptomulik/portsutil","version_requirement":">= 0.0.3"},
     {"name":"ptomulik/backport_package_settings","version_requirement":">= 0.0.1"}
+  ],
+  "operatingsystem_support" : [
+        { "operatingsystem" : "FreeBSD" }
   ]
 }
