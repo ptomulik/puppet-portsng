@@ -2,6 +2,7 @@
 Gemfile.lock
 vendor/
 pkg/
+log/
 spec/fixtures/
 spec/lib/
 .rspec_system
