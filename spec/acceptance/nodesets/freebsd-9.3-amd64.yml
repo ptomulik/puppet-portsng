@@ -1,0 +1,10 @@
+HOSTS:
+  freebsd-9.3-amd64:
+    roles:
+      - agent
+      - default
+    platform: freebsd-9.3-amd64
+    hypervisor: vagrant
+    box: ptomulik/freebsd-9.3-amd64-ports
+CONFIG:
+  type: foss
