@@ -11,6 +11,10 @@ def location_for(place, fake_version = nil)
 end
 
 group :development, :unit_tests do
+  if RUBY_VERSION >= '1.8.7' and RUBY_VERSION < '1.9'
+    # http://stackoverflow.com/questions/30928415/how-to-setup-puppet-rspec-correctly
+    gem 'rspec', '~> 2.0'
+  end
   if RUBY_VERSION >= '1.9'
     gem 'rake'
   else
