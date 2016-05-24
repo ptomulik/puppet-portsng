@@ -13,6 +13,9 @@ rvm:
   - 2.1
   - 2.2
     #  - ruby-head
+
+bundler_args: --without acceptance_tests
+
 script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
 env:
   matrix:
