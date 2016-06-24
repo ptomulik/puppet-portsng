@@ -1,6 +1,8 @@
-2015-05-24 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+2016-06-24 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * minor revision to README.md
+2016-05-24 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * initially implemented acceptance testing machinery
-2015-05-23 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+2016-05-23 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * updated Vagrantfile to use ptomulik/freebsd-* boxes from atlas.hashicorp.com
 2016-05-19 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.1.6
