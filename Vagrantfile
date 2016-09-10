@@ -42,7 +42,7 @@ Vagrant.configure(2) do |config|
   # Present machines that may be used...
   if ARGV.include?('up') then
     i = ARGV.index('up')
-    unless ARGV.size > i+1 and boxess.include?(ARGV[-1]) then
+    unless ARGV.size > i+1 and boxes.include?(ARGV[-1]) then
       puts("No default machine defined, use one of the following:")
       boxes.map do |name|
         puts("vagrant up #{name}\n")
