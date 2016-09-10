@@ -21,6 +21,9 @@ group :development, :unit_tests do
     gem 'rake', "< 10.0"
     gem 'highline', "< 1.7"
   end
+  if RUBY_VERSION < '2.0'
+    gem 'json_pure', "< 2.0.0"
+  end
   gem 'rspec-puppet'
   gem 'puppetlabs_spec_helper',  :require => false
   if RUBY_VERSION >= '1.9'
