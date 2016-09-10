@@ -1,4 +1,5 @@
 2016-09-10 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * use tins < 1.7.0 for ruby < 2.0
   * revert temporary fix for travis issue #1793
   * use json_pure < 2.0.0 for ruby < 2.0
   * added acceptance tests to test package_settings
