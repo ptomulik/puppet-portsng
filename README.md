@@ -220,10 +220,6 @@ documentation.
   method. But `query` handles only one package per name (in this case the last
   one from *portversion*'s list if chosen). This is an issue, which will not
   probably be fixed, so you're encouraged to use *portorigins*.
-* Currently there is no system tests for the new *portsng* provider. This is,
-  because there are no FreeBSD prefab images provided by `rspec-system` yet. I
-  hope this changes in not so far future, see status of the [request for freebsd
-  prefab images](https://github.com/puppetlabs/rspec-system/issues/52).
 
 
 [[Table of Contents](#table-of-contents)]
