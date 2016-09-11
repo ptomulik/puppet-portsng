@@ -1,4 +1,5 @@
 2016-09-11 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * release 0.1.8
   * patch specinfra so that acceptance tests work on FreeBSD 9.3 + pkgng
 2016-09-10 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * use tins < 1.7.0 for ruby < 2.0
