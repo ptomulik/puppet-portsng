@@ -24,7 +24,8 @@ RSpec.configure do |c|
   # Configure all nodes in nodeset
   c.before :suite do
     hosts.each do |host|
-      install_dev_puppet_module_on(host, :source => proj_root, :module_name => 'portsng')
+      install_dev_puppet_module_on(host, :source => proj_root,
+                                         :module_name => 'portsng')
       # Install dependencies
       on host, puppet('module', 'install', 'ptomulik-portsutil')
       on host, puppet('module', 'install', 'ptomulik-backport_package_settings')

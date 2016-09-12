@@ -1,23 +1,15 @@
-dir = File.expand_path(File.join(File.dirname(__FILE__), '../../..'))
-$LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir)
-dir = File.expand_path(File.join(File.dirname(__FILE__), '../../../../../vash/lib'))
-$LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir)
-dir = File.expand_path(File.join(File.dirname(__FILE__), '../../../../../portsutil/lib'))
-$LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir)
-dir = File.expand_path(File.join(File.dirname(__FILE__), '../../../../../backport_package_settings/lib'))
-$LOAD_PATH.unshift(dir) unless $LOAD_PATH.include?(dir)
-
 require 'puppet/backport/type/package/package_settings'
 require 'puppet/provider/package'
 
-Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Package do
-  desc "Support for FreeBSD's ports. Note that this, too, mixes packages and ports.
+Puppet::Type.type(:package).provide :portsng,
+                                    :parent => Puppet::Provider::Package do
+  desc "Support for FreeBSD's ports. Note that this mixes packages and ports.
 
   `install_options` are passed to `portupgrade` command when installing,
   reinstalling or upgrading packages. You should always include
   `['-M','BATCH=yes']` options in your custom `install_options`. Some CLI flags
   are prepended internally to CLI and some flags given by user are internally
-  removed when performing install, reinstall or upgrade actions.  Install
+  removed when performing install, reinstall or upgrade actions. Install
   always prepends `-N` and removes `-R` and `-f` if provided by user. Reinstall
   always prepends `-f` and removes `-N` flag if present. Upgrade always removes
   `-N` and `-f` if present in install_options.
@@ -29,8 +21,8 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
   for `pkg` (pkgng toolstack), you should always include the `-y` option (see
   pkg-delete(8) for details). Typical use case for `uninstall_options` is
   uninstalling packages recursively, that is uninstalling a package and all the
-  other packages depending on this one. For `pkg_deinstall` the `%w{-r}` does
-  the job and for `pkgng` it's achieved with `%w{-y -R}`.
+  other packages depending on this one. For `pkg_deinstall` the `%w(-r)` does
+  the job and for `pkgng` it's achieved with `%w(-y -R)`.
 
   `package_settings` shall be a hash with port's option names as keys (all
   uppercase) and boolean values. This parameter defines options that you would
@@ -56,123 +48,169 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
   extend Puppet::Util::PTomulik::Package::Ports
 
   # Default options for {#install} method.
-  self::DEFAULT_INSTALL_OPTIONS = %w{-N -M BATCH=yes}
+  self::DEFAULT_INSTALL_OPTIONS = %w(-N -M BATCH=yes).freeze
   # Default options for {#reinstall} method.
-  self::DEFAULT_REINSTALL_OPTIONS = %w{-r -f -M BATCH=yes}
+  self::DEFAULT_REINSTALL_OPTIONS = %w(-r -f -M BATCH=yes).freeze
   # Default options for {#update} method.
-  self::DEFAULT_UPGRADE_OPTIONS = %w{-R -M BATCH=yes}
+  self::DEFAULT_UPGRADE_OPTIONS = %w(-R -M BATCH=yes).freeze
 
   # Detect whether the OS uses old pkg or the new pkgng.
   if pkgng_active? :pkg => '/usr/local/sbin/pkg'
     commands :portuninstall => '/usr/local/sbin/pkg',
              :pkg => '/usr/local/sbin/pkg'
-    self::DEFAULT_UNINSTALL_OPTIONS =  %w{delete -y}
+    self::DEFAULT_UNINSTALL_OPTIONS = %w(delete -y).freeze
   else
     commands :portuninstall => '/usr/local/sbin/pkg_deinstall'
-    self::DEFAULT_UNINSTALL_OPTIONS =  %w{}
+    self::DEFAULT_UNINSTALL_OPTIONS = %w().freeze
   end
   debug "Selecting '#{command(:portuninstall)}' command as package uninstaller"
 
-  commands :portupgrade   => "/usr/local/sbin/portupgrade",
-           :portversion   => "/usr/local/sbin/portversion",
-           :make          => "/usr/bin/make"
-
-# Ok, don't change current defaults, as this is just a module.
-#  defaultfor :operatingsystem => :freebsd
+  commands :portupgrade => '/usr/local/sbin/portupgrade',
+           :portversion => '/usr/local/sbin/portversion',
+           :make =>        '/usr/bin/make'
 
   has_feature :install_options
   has_feature :uninstall_options
 
   # I hate ports
-  %w{INTERACTIVE UNAME}.each do |var|
+  %w(INTERACTIVE UNAME).each do |var|
     ENV.delete(var) if ENV.include?(var)
   end
 
   # note, portsdir and port_dbdir are defined in module
   # Puppet::Util::PTomulik::Package::Ports::Functions
-  confine :exists => [ portsdir, port_dbdir ]
+  confine :exists => [portsdir, port_dbdir]
 
   def pkgng_active?
     self.class.pkgng_active?
   end
 
-  def self.instances(names=nil)
-    split_record = names ? lambda{|r| [r[1][:pkgname],r[1]]} :
-                           lambda{|r| [r[:pkgname], r]}
-
-    fields = Puppet::Util::PTomulik::Package::Ports::PkgRecord.default_fields
-    options = if pkgng_active?
-      # here, with pkgng we have more reliable and efficient way to retrieve
-      # build options
-      fields -= [:options]
-      options_class = Puppet::Util::PTomulik::Package::Ports::Options
-      options_class.query_pkgng('%o',nil,{:pkg => command(:pkg)})
-    else
-      {}
-    end
-
-    records = {}
-    # find installed packages
-    search_packages(names,fields) do |record|
-      name, record = split_record.call(record)
-      records[name] ||= Array.new
-      records[name] << record
-    end
-    # create provider instances
-    packages = []
-    with_unique('installed ports', records) do |pkgname,record|
-      unless record[:portorigin] and ['<','=','>'].include?(record[:portstatus])
-        record.delete(:portorigin) if record[:portorigin]
-        warning "Could not find port for installed package '#{pkgname}'." +
-                "Build options and upgrades will not work for this package."
-      end
-      # if portorigin is unavailable, use pkgname to identify the package,
-      # this allows to at least uninstall packages that are currently
-      # installed but their ports were removed from ports tree
-      package = new({
-        :name => record[:portorigin] || record[:pkgname],
-        :ensure => record[:pkgversion],
-        :package_settings => options[record[:portorigin]] || record[:options] || {},
-        :provider => self.name
-      })
-      package.assign_port_attributes(record)
-      packages << package
-    end
-    packages
+  def self.instances(names = nil)
+    records = find_packages(names, instances_fields)
+    instances_from_package_records(records, query_build_options)
   end
 
   def self.prefetch(packages)
-    # already installed packages
-    newpkgs = packages.keys
-    instances.each do |prov|
-      if pkg = (packages[prov.name] || packages[prov.portorigin] ||
-                packages[prov.pkgname] || packages[prov.portname])
-        newpkgs -= [prov.name, prov.portorigin, prov.pkgname, prov.portname]
-        pkg.provider = prov
-      end
-    end
-    # we prefetch also not installed ports to save time; this way we perform
+    # prefetch already installed packages
+    absent = prefetch_present(packages)
+    # also prefetch not installed ports to save time; this way we perform
     # only two or three calls to `make search` (for up to 60 packages) instead
     # of 3xN calls (in query()) for N packages
+    prefetch_absent(packages, absent)
+  end
+
+  def self.instances_fields
+    fields = Puppet::Util::PTomulik::Package::Ports::PkgRecord.default_fields
+    fields -= [:options] if pkgng_active?
+    fields
+  end
+  private_class_method :instances_fields
+
+  # return build options for all installed packages (if pkgng is active)
+  def self.query_build_options
+    if pkgng_active?
+      # here, with pkgng we have more reliable and efficient way to retrieve
+      # build options
+      options_class = Puppet::Util::PTomulik::Package::Ports::Options
+      options_class.query_pkgng('%o', nil, :pkg => command(:pkg))
+    else
+      {}
+    end
+  end
+  private_class_method :query_build_options
+
+  def self.split_record_fcn(names)
+    if names
+      lambda { |r| [r[1][:pkgname], r[1]] }
+    else
+      lambda { |r| [r[:pkgname], r] }
+    end
+  end
+  private_class_method :split_record_fcn
+
+  def self.find_packages(names, fields)
+    split_record = split_record_fcn(names)
     records = {}
-    search_ports(newpkgs) do |name,record|
+    # find installed packages
+    search_packages(names, fields) do |record|
+      name, record = split_record.call(record)
       records[name] ||= []
       records[name] << record
     end
-    with_unique('ports', records) do |name,record|
-      prov = new({:name => record[:portorigin], :ensure => :absent})
-      prov.assign_port_attributes(record)
-      packages[name].provider = prov
+    records
+  end
+  private_class_method :find_packages
+
+  def self.instance_from_package_record(record, options)
+    portorigin = record[:portorigin]
+    # if portorigin is unavailable, use pkgname to identify the package,
+    # this allows to at least uninstall packages that are currently
+    # installed but their ports were removed from ports tree
+    new(:name => portorigin || record[:pkgname],
+        :ensure => record[:pkgversion],
+        :package_settings => options[portorigin] || record[:options] || {},
+        :provider => name).assign_port_attributes(record)
+  end
+  private_class_method :instance_from_package_record
+
+  def self.instances_from_package_records(records, options)
+    packages = []
+    with_unique('installed ports', records) do |pkgname, rec|
+      unless rec[:portorigin] && ['<', '=', '>'].include?(rec[:portstatus])
+        rec.delete(:portorigin) if rec[:portorigin]
+        warning "Could not find port for installed package '#{pkgname}'. " \
+                'Build options and upgrades will not work for this package.'
+      end
+      packages << instance_from_package_record(rec, options)
+    end
+    packages
+  end
+  private_class_method :instances_from_package_records
+
+  def self.find_ports(names)
+    records = {}
+    search_ports(names) do |name, record|
+      records[name] ||= []
+      records[name] << record
+    end
+    records
+  end
+  private_class_method :find_ports
+
+  def self.instance_from_absent_port_record(record)
+    portorigin = record[:portorigin]
+    new(:name => portorigin, :ensure => :absent).assign_port_attributes(record)
+  end
+  private_class_method :instance_from_absent_port_record
+
+  # prefetch already installed packages and return remaining packages
+  def self.prefetch_present(packages)
+    absent = packages.keys
+    instances.each do |prov|
+      keys = [prov.name, prov.portorigin, prov.pkgname, prov.portname]
+      pkg = keys.map { |x| packages[x] }.find { |x| x }
+      next unless pkg
+      absent -= keys
+      pkg.provider = prov
+    end
+    absent
+  end
+  private_class_method :prefetch_present
+
+  def self.prefetch_absent(packages, absent)
+    with_unique('ports', find_ports(absent)) do |name, record|
+      packages[name].provider = instance_from_absent_port_record(record)
     end
   end
+  private_class_method :prefetch_absent
 
   def self.with_unique(what, records)
-    records.each do |name,array|
+    records.each do |name, array|
       record = array.last
       if (len = array.length) > 1
-        warning "Found #{len} #{what} named '#{name}': " +
-          "#{array.map{|r| "'#{r[:portorigin]}'"}.join(', ')}. " +
-          "Only '#{record[:portorigin]}' will be ensured."
+        warning "Found #{len} #{what} named '#{name}': " \
+                "#{array.map { |r| "'#{r[:portorigin]}'" }.join(', ')}. " \
+                "Only '#{record[:portorigin]}' will be ensured."
       end
       yield name, record
     end
@@ -187,13 +225,14 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
     :portinfo,
     :options_file,
     :options_files
-  ]
+  ].freeze
 
   self::PORT_ATTRIBUTES.each do |attr|
     define_method(attr) do
       var = instance_variable_get("@#{attr}".intern)
       unless var
-        raise Puppet::Error, "Attribute '#{attr}' not assigned for package '#{self.name}'."
+        raise Puppet::Error,
+              "Attribute '#{attr}' not assigned for package '#{self.name}'."
       end
       var
     end
@@ -204,49 +243,55 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
     (record.keys & self.class::PORT_ATTRIBUTES).each do |key|
       instance_variable_set("@#{key}".intern, record[key])
     end
+    self
   end
+
+  def validate_package_setting(key, value)
+    options_class = Puppet::Util::PTomulik::Package::Ports::Options
+    unless options_class.option_name?(key)
+      raise ArgumentError, "#{key.inspect} is not a valid option name (for" \
+                           ' $package_settings)'
+    end
+    unless options_class.option_value?(value)
+      raise ArgumentError, "#{value.inspect} is not a valid option value (for" \
+                           ' $package_settings)'
+    end
+    true
+  end
+  private :validate_package_setting
 
   # needed by Puppet::Type::Package
   def package_settings_validate(opts)
-    return true if not opts # options not defined
+    return true unless opts # options not defined
     options_class = Puppet::Util::PTomulik::Package::Ports::Options
-    unless opts.is_a?(Hash) or opts.is_a?(options_class)
-      fail ArgumentError, "#{opts.inspect} of type #{opts.class} is not an " +
-                          "options Hash (for $package_settings)"
+    unless opts.is_a?(Hash) || opts.is_a?(options_class)
+      raise ArgumentError, "#{opts.inspect} of type #{opts.class} is not an " \
+                           'options Hash (for $package_settings)'
     end
-    opts.each do |k, v|
-      unless options_class.option_name?(k)
-        fail ArgumentError, "#{k.inspect} is not a valid option name (for " +
-                            "$package_settings)"
-      end
-      unless options_class.option_value?(v)
-        fail ArgumentError, "#{v.inspect} is not a valid option value (for " +
-                            "$package_settings)"
-      end
-    end
+    opts.each { |k, v| validate_package_setting(k, v) }
     true
   end
 
   # needed by Puppet::Type::Package
   def package_settings_munge(opts)
-    unless opts.is_a?(Puppet::Util::PTomulik::Package::Ports::Options)
-      Puppet::Util::PTomulik::Package::Ports::Options[opts || {}]
-    else
+    if opts.is_a?(Puppet::Util::PTomulik::Package::Ports::Options)
       opts
+    else
+      Puppet::Util::PTomulik::Package::Ports::Options[opts || {}]
     end
   end
 
   # needed by Puppet::Type::Package
   def package_settings_insync?(should, is)
-    unless should.is_a?(Puppet::Util::PTomulik::Package::Ports::Options) and
-               is.is_a?(Puppet::Util::PTomulik::Package::Ports::Options)
+    unless should.is_a?(Puppet::Util::PTomulik::Package::Ports::Options) &&
+           is.is_a?(Puppet::Util::PTomulik::Package::Ports::Options)
       return false
     end
-    is.select {|k,v| should.keys.include? k} == should
+    is.select { |k, _| should.keys.include? k } == should
   end
 
   # needed by Puppet::Type::Package
-  def package_settings_should_to_s(should, newvalue)
+  def package_settings_should_to_s(_should, newvalue)
     if newvalue.is_a?(Puppet::Util::PTomulik::Package::Ports::Options)
       Puppet::Util::PTomulik::Package::Ports::Options[newvalue.sort].inspect
     else
@@ -257,7 +302,7 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
   # needed by Puppet::Type::Package
   def package_settings_is_to_s(should, currentvalue)
     if currentvalue.is_a?(Puppet::Util::PTomulik::Package::Ports::Options)
-      hash = currentvalue.select{|k,v| should.keys.include? k}.sort
+      hash = currentvalue.select { |k, _| should.keys.include? k }.sort
       Puppet::Util::PTomulik::Package::Ports::Options[hash].inspect
     else
       currentvalue.inspect
@@ -276,18 +321,18 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
   end
 
   def sync_package_settings(should)
-    return if not should
+    return unless should
     is = properties[:package_settings]
     unless package_settings_insync?(should, is)
-      should.save(options_file, { :pkgname => pkgname })
+      should.save(options_file, :pkgname => pkgname)
     end
   end
   private :sync_package_settings
 
   def revert_package_settings
-    if options = properties[:package_settings]
+    if (options = properties[:package_settings])
       debug "Reverting options in #{options_file}"
-      properties[:package_settings].save(options_file, { :pkgname => pkgname })
+      options.save(options_file, :pkgname => pkgname)
     end
   end
   private :revert_package_settings
@@ -305,7 +350,7 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
     # We always remove -R and -f from command line, as these options have
     # no clear meaning when -N is used (either, they have no effect with -R or
     # they can mess-up your OS - I haven't checked this).
-    prepare_options(ops, self.class::DEFAULT_INSTALL_OPTIONS, %w{-N}, %w{-R -f})
+    prepare_options(ops, self.class::DEFAULT_INSTALL_OPTIONS, %w(-N), %w(-R -f))
   end
 
   # Return portupgrade's CLI options for use within the {#reinstall} method.
@@ -317,7 +362,7 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
     # reinstall method is invoked on already installed packages only).
     # We always add -f to command line, to not silently skip reinstall (without
     # this reinstalls are silently discarded)
-    prepare_options(ops, self.class::DEFAULT_REINSTALL_OPTIONS, %w{-f}, %w{-N})
+    prepare_options(ops, self.class::DEFAULT_REINSTALL_OPTIONS, %w(-f), %w(-N))
   end
 
   # Return portupgrade's CLI options for use within the {#update} method.
@@ -330,7 +375,7 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
     # We always remove -f from command line, as the upgrade procedure shouldn't
     # depend on it (upgrade should only be used to install newer versions,
     # which must work without -f)
-    prepare_options(ops, self.class::DEFAULT_UPGRADE_OPTIONS, %w{}, %w{-f -N})
+    prepare_options(ops, self.class::DEFAULT_UPGRADE_OPTIONS, %w(), %w(-f -N))
   end
 
   # Return portuninstall's CLI options for use within the {#uninstall} method.
@@ -338,7 +383,7 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
     # For pkgng we always prepend the 'delete' command to options.
     ops = resource[:uninstall_options]
     if pkgng_active?
-      prepare_options(ops, self.class::DEFAULT_UNINSTALL_OPTIONS, %w{delete})
+      prepare_options(ops, self.class::DEFAULT_UNINSTALL_OPTIONS, %w(delete))
     else
       prepare_options(ops, self.class::DEFAULT_UNINSTALL_OPTIONS)
     end
@@ -361,28 +406,21 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
     return defaults unless options
 
     # handle {option => value} hashes and flatten nested arrays
-    options = options.collect do |val|
-      case val
-      when Hash
-        val.keys.sort.collect { |k| "#{k}=#{val[k]}" }
-      else
-        val
-      end
+    options = options.collect do |x|
+      x.is_a?(Hash) ? x.keys.sort.collect { |k| "#{k}=#{x[k]}" } : x
     end.flatten
 
     # add some flags we think are mandatory for the given operation
     extra.each { |f| options.unshift(f) unless options.include?(f) }
-    options = options - deny
-    options
+    options -= deny
   end
 
   # For internal use only
   def do_portupgrade(name, args, package_settings)
-    cmd = args << name
+    cmd = args + [name]
     begin
       sync_package_settings(package_settings)
-      output = portupgrade(*cmd)
-      if output =~ /\*\* No such /
+      if portupgrade(*cmd) =~ /\*\* No such /
         raise Puppet::ExecutionFailure, "Could not find package #{name}"
       end
     rescue
@@ -412,53 +450,53 @@ Puppet::Type.type(:package).provide :portsng, :parent => Puppet::Provider::Packa
   def update
     if properties[:ensure] == :absent
       install
+    elsif @portorigin
+      do_portupgrade portorigin, upgrade_options, resource[:package_settings]
     else
-      if @portorigin
-        do_portupgrade portorigin, upgrade_options, resource[:package_settings]
-      else
-        warning "Could not upgrade package '#{name}' which has no port origin."
-      end
+      warning "Could not upgrade package '#{name}' which has no port origin."
     end
   end
 
   # uninstall already installed package
   def uninstall
-    cmd = uninstall_options << self.pkgname
+    cmd = uninstall_options << pkgname
     portuninstall(*cmd)
   end
 
   # If there are multiple packages, we only use the last one
+  # rubocop: disable MethodLength, AbcSize, CyclomaticComplexity
   def latest
     # If there's no "latest" version, we just return a placeholder
     result = :latest
-    status, info, portname, oldversion = [nil, nil, nil, nil]
     oldversion = properties[:ensure]
     case portstatus
-    when '>','='
+    when '>', '='
       result = oldversion
     when '<'
-      if m = portinfo.match(/\((\w+) has (.+)\)/)
-        source, newversion = m[1,2]
+      if (m = portinfo.match(/\((\w+) has (.+)\)/))
+        source, newversion = m[1, 2]
         debug "Newer version in #{source}"
         result = newversion
       else
         raise Puppet::Error, "Could not match version info #{portinfo.inspect}."
       end
     when '?'
-      warning "The installed package '#{pkgname}' does not appear in the " +
-        "ports database nor does its port directory exist."
+      warning "The installed package '#{pkgname}' does not appear in the " \
+              'ports database nor does its port directory exist.'
     when '!'
-      warning "The installed package '#{pkgname}' does not appear in the " +
-        "ports database, the port directory actually exists, but the latest " +
-        "version number cannot be obtained."
+      warning "The installed package '#{pkgname}' does not appear in the " \
+              'ports database, the port directory actually exists, but the ' \
+              'latest version number cannot be obtained.'
     when '#'
-      warning "The installed package '#{pkgname}' does not have an origin recorded."
+      warning "The installed package '#{pkgname}' does not have an origin " \
+              'recorded.'
     else
-      warning "Invalid status flag #{portstatus.inspect} for package " +
-        "'#{pkgname}' (returned by portversion command)."
+      warning "Invalid status flag #{portstatus.inspect} for package " \
+              "'#{pkgname}' (returned by portversion command)."
     end
     result
   end
+  # rubocop: enable all
 
   def query
     # support names, portorigin, pkgname and portname

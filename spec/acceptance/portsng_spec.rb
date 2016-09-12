@@ -1,18 +1,13 @@
 require 'spec_helper_acceptance'
 
+# rubocop: disable LineLength
 describe 'portsng provider' do
-
   def package_setting(portname, optname)
     cmd = "make -C /usr/ports/#{portname} showconfig | awk -F '[=:]' '/#{optname}/ {print $2}'"
     shell(cmd).stdout.strip
   end
 
-  skip_tests = true
-  case fact('osfamily')
-  when 'FreeBSD'
-    portname = 'misc/ddate'
-    skip_tests = false
-  end
+  portname = 'misc/ddate'
 
   context "package {'#{portname}': ensure => absent}" do
     it 'runs without an error' do
@@ -60,14 +55,14 @@ describe 'portsng provider' do
     describe package(portname) do
       it { is_expected.to be_installed }
     end
-    describe "package option USFORMAT" do
-      it { expect(package_setting(portname, 'USFORMAT')).to eq "off" }
+    describe 'package option USFORMAT' do
+      it { expect(package_setting(portname, 'USFORMAT')).to eq 'off' }
     end
-    describe "package option KILLBOB" do
-      it { expect(package_setting(portname, 'KILLBOB')).to eq "on" }
+    describe 'package option KILLBOB' do
+      it { expect(package_setting(portname, 'KILLBOB')).to eq 'on' }
     end
-    describe "package option PRAISEBOB" do
-      it { expect(package_setting(portname, 'PRAISEBOB')).to eq "off" }
+    describe 'package option PRAISEBOB' do
+      it { expect(package_setting(portname, 'PRAISEBOB')).to eq 'off' }
     end
   end
 
@@ -85,14 +80,15 @@ describe 'portsng provider' do
     describe package(portname) do
       it { is_expected.to be_installed }
     end
-    describe "package option USFORMAT" do
-      it { expect(package_setting(portname, 'USFORMAT')).to eq "on" }
+    describe 'package option USFORMAT' do
+      it { expect(package_setting(portname, 'USFORMAT')).to eq 'on' }
     end
-    describe "package option KILLBOB" do
-      it { expect(package_setting(portname, 'KILLBOB')).to eq "on" }
+    describe 'package option KILLBOB' do
+      it { expect(package_setting(portname, 'KILLBOB')).to eq 'on' }
     end
-    describe "package option PRAISEBOB" do
-      it { expect(package_setting(portname, 'PRAISEBOB')).to eq "off" }
+    describe 'package option PRAISEBOB' do
+      it { expect(package_setting(portname, 'PRAISEBOB')).to eq 'off' }
     end
   end
 end
+# rubocop: enable all
