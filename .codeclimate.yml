@@ -1,0 +1,15 @@
+engines:
+  rubocop:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+        - ruby
+ratings:
+  paths:
+    - "**/Gemfile"
+    - "**/Rakefile"
+    - "**/Vagrantfile"
+    - "lib/**/*.rb"
+    - "spec/**/*.rb"
