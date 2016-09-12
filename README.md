@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ptomulik/puppet-portsng.png?branch=master)](https://travis-ci.org/ptomulik/puppet-portsng)
 [![Coverage Status](https://coveralls.io/repos/ptomulik/puppet-portsng/badge.png?branch=master)](https://coveralls.io/r/ptomulik/puppet-portsng?branch=master)
+[![Code Climate](https://codeclimate.com/github/ptomulik/puppet-portsng/badges/gpa.svg)](https://codeclimate.com/github/ptomulik/puppet-portsng)
 
 ##<a id="table-of-contents"></a>Table of Contents
 
