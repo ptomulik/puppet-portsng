@@ -1,4 +1,5 @@
 2016-09-12 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * added .codeclimage.yml
   * introduced rubycop
 2016-09-11 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.1.8

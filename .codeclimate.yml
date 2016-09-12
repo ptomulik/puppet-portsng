@@ -13,3 +13,5 @@ ratings:
     - "**/Vagrantfile"
     - "lib/**/*.rb"
     - "spec/**/*.rb"
+exclude_paths:
+  - "spec/**/*_spec.rb"
