@@ -122,8 +122,8 @@ Warning: Puppet::Type::Package::ProviderPorts: Found 3 ports named 'mysql-client
 ###<a id="what-portsng-affects"></a>What portsng affects
 
 * installs, upgrades, reinstalls and uninstalls packages,
-* modifies FreeBSD ports options' files `/var/db/ports/*/options.local` or,
-  `/var/db/ports/*/options` (if really outdated ports tree is used),
+* modifies FreeBSD ports options' files `/var/db/ports/*/options.local` or
+  `/var/db/ports/*/options` (if really outdated ports tree is used).
 
 [[Table of Contents](#table-of-contents)]
 
@@ -263,8 +263,8 @@ documentation.
   ```
 
   - this is caused by portupgrade v. 2.4.10.X, see
-    [FreeBSD Bug #175281](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=175281)
-    install another version of portupgrade.
+    [FreeBSD Bug #175281](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=175281),
+  - install another version of portupgrade to fix this.
 
 [[Table of Contents](#table-of-contents)]
 
