@@ -1,6 +1,6 @@
 {
   "name": "ptomulik-portsng",
-  "version": "0.1.10alpha1",
+  "version": "0.2.0",
   "author": "ptomulik",
   "summary": "Ports provider for package resource type",
   "license": "Apache License, Version 2.0",
@@ -9,8 +9,8 @@
   "issues_url": "https://github.com/ptomulik/puppet-portsng/issues",
   "description": "Ports provider for package resource type",
   "dependencies": [
-    {"name":"ptomulik/portsutil","version_requirement":">= 0.0.3"},
-    {"name":"ptomulik/backport_package_settings","version_requirement":">= 0.0.1"}
+    {"name":"ptomulik/portsutil","version_requirement":">= 0.1.3"},
+    {"name":"ptomulik/backports","version_requirement":">= 0.0.1"}
   ],
   "operatingsystem_support" : [
         { "operatingsystem" : "FreeBSD" }

@@ -1,14 +1,15 @@
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'patches/lib'))
 require 'beaker-rspec'
 require 'beaker-rspec/helpers/serverspec'
 require 'specinfra_patch'
 
 # Install Puppet on all hosts
 hosts.each do |host|
-  puts "PLATFORM: #{host['platform']}"
   if host['platform'] =~ /freebsd/
+    default_puppet = host['platform'] =~ /9\.[0-1]/ ? 'puppet' : 'puppet37'
     # install_puppet does not work on FreeBSD (it uses sysutils/puppet port
     # which doesn't seem to exist)
-    host.install_package(ENV['BEAKER_puppet'] || 'puppet37')
+    host.install_package(ENV['BEAKER_puppet'] || default_puppet)
   else
     install_puppet_on(host)
   end
@@ -26,9 +27,30 @@ RSpec.configure do |c|
     hosts.each do |host|
       install_dev_puppet_module_on(host, :source => proj_root,
                                          :module_name => 'portsng')
+      puppet_version = Gem::Version.new(on(host, puppet('--version')).stdout)
+      # Puppet < 2.7.14 has no "module" subcommand, and we need
+      # "puppet-module" gem to install modules.
+      v2_7_14 = Gem::Version.new('2.7.14')
+      if puppet_version < v2_7_14
+        gemglob = '/usr/local/lib/ruby/gems/*/gems/puppet-module*'
+        pattern = 'http:\\/\\/\\(forge\\.puppetlabs\\.com\\)'
+        host.shell 'gem install puppet-module'
+        host.shell "find #{gemglob} -name '*.rb' | " \
+                   "xargs sed -e 's/#{pattern}/https:\\/\\/\\1/g' -i ''"
+      end
       # Install dependencies
-      on host, puppet('module', 'install', 'ptomulik-portsutil')
-      on host, puppet('module', 'install', 'ptomulik-backport_package_settings')
+      moddeps = %w(portsutil backports)
+      # The gem puppet-module does not seem to handle dependencies
+      moddeps << 'vash' if puppet_version < v2_7_14
+      moddeps.each do |modname|
+        mn = "ptomulik-#{modname}"
+        if puppet_version < v2_7_14
+          moduledir = '/usr/local/etc/puppet/modules'
+          host.shell "cd  #{moduledir} && puppet module install #{mn}"
+        else
+          install_puppet_module_via_pmt_on(host, :module_name => mn)
+        end
+      end
     end
   end
 end

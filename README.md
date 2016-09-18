@@ -12,8 +12,9 @@
     * [What portsng affects](#what-portsng-affects)
     * [Setup requirements](#setup-requirements)
     * [Beginning with portsng](#beginning-with-portsng)
-4. [Limitations](#limitations)
-5. [Development](#development)
+4. [Troubleshooting](#troubleshooting)
+5. [Limitations](#limitations)
+6. [Development](#development)
 
 ##<a id="overview"></a>Overview
 
@@ -27,12 +28,14 @@ to it and fixing several existing issues. The new features include:
 
   * *install_options* - extra CLI flags passed to *portupgrade* when
     installing, reinstalling and upgrading packages,
-  * *uninstall_options* - extra CLI flags passed to *pkg_deinstall* (old
-    [pkg](http://www.freebsd.org/doc/handbook/packages-using.html) toolstack)
-    or *pkg delete*
+  * *uninstall_options* - extra CLI flags passed to
+    [pkg_deinstall(1)](https://www.freebsd.org/cgi/man.cgi?query=pkg_deinstall&sektion=1)
+    (old [pkg](http://www.freebsd.org/doc/handbook/packages-using.html)
+    toolstack) or [pkg delete](https://www.freebsd.org/cgi/man.cgi?query=pkg&sektion=8)
     ([pkgng](http://www.freebsd.org/doc/handbook/pkgng-intro.html)) when
     uninstalling packages,
-  * *package_settings* - configuration options for package,
+  * *package_settings* - configuration options for package, the ones you
+    usually set with ``make config``,
   * works wit both the old
     [pkg](http://www.freebsd.org/doc/handbook/packages-using.html) and new
     [pkgng](http://www.freebsd.org/doc/handbook/pkgng-intro.html) package
@@ -119,7 +122,8 @@ Warning: Puppet::Type::Package::ProviderPorts: Found 3 ports named 'mysql-client
 ###<a id="what-portsng-affects"></a>What portsng affects
 
 * installs, upgrades, reinstalls and uninstalls packages,
-* modifies FreeBSD ports options' files `/var/db/ports/*/options.local`,
+* modifies FreeBSD ports options' files `/var/db/ports/*/options.local` or,
+  `/var/db/ports/*/options` (if really outdated ports tree is used),
 
 [[Table of Contents](#table-of-contents)]
 
@@ -207,6 +211,60 @@ Debug: Executing '/usr/local/sbin/portupgrade -N -P -M BATCH=yes www/apache22'
 Note, that the *portsng* provider adds some flags by its own (`-N` in the above
 example). What is added/removed is preciselly stated in provider's generated
 documentation.
+
+[[Table of Contents](#table-of-contents)]
+
+##<a id="troubleshooting"></a>Troubleshooting
+
+* puppet is unable to find information about not yet installed ports
+
+  - try to run manually (as root)
+
+    ```console
+    ~ # make seach -C /usr/ports/misc/figlet
+    ```
+
+    if it prints something like "Please run make index", then follow that
+    advice. You may also check ``/usr/ports`` for ``INDEX-*`` files and if
+    they're absent, then regenerate index with ``make index``. Note, that
+    it may take a while.
+
+* portupgrade hangs when called from puppet (on some older FreeBSD versions)
+
+  - it may be the [script(1)](https://www.freebsd.org/cgi/man.cgi?script%281%29)
+    command hanging. You may try to run the following script to fix pkgtools
+
+    ```console
+    #!/bin/sh
+
+    set -e
+
+    # Fix for hanging "script -qa ... " in pkgtools.rb used by portupgrade
+    if [ -d '/usr/local/lib/ruby' ]; then
+      echo "/usr/local/lib/ruby is a directory";
+      for F in `find /usr/local/lib/ruby -name 'pkgtools.rb' -type f`; do
+        UNCHMOD=false;
+        echo "patching $F...";
+        test -w $F || (chmod u+w $F; UNCHMOD=true);
+        sed -e "s/\[script_path(), '-qa', file, \*args\]/[script_path(), '-t', '0', '-qa', file, \*args]/" \
+            -e "s/\['\/usr\/bin\/script', '-qa', file, \*args\]/['\/usr\/bin\/script', '-t', '0', '-qa', file, \*args]/" \
+            -i '' $F;
+        if $UNCHMOD; then chmod u-w $F; fi
+      done
+    fi
+    ```
+
+    The script may also be [downloaded from github](https://raw.githubusercontent.com/ptomulik/puppet-portsng/master/.fixes/fix-hanging-pkgtools.sh)
+
+* installation fails with error message
+
+  ```console
+  /usr/local/sbin/portupgrade:569:in `chdir': HOME/LOGDIR not set (ArgumentError)
+  ```
+
+  - this is caused by portupgrade v. 2.4.10.X, see
+    [FreeBSD Bug #175281](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=175281)
+    install another version of portupgrade.
 
 [[Table of Contents](#table-of-contents)]
 

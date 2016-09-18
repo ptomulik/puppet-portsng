@@ -1,3 +1,5 @@
+2016-09-18 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * several fixes, mainly for older FreeBSD
 2016-09-12 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.1.9
   * added .codeclimage.yml

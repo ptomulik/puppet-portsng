@@ -1,4 +1,12 @@
+# Some ancient versions of puppet were not adding modules to $LOAD_PATH
+%w(vash portsutil backports).each do |p|
+  dir = File.join(File.dirname(__FILE__), "../../../../../#{p}/lib")
+  dir = File.expand_path(dir)
+  $LOAD_PATH.unshift(dir) if !$LOAD_PATH.include?(dir) && File.directory?(dir)
+end
+
 require 'puppet/backport/type/package/package_settings'
+require 'puppet/backport/type/package/uninstall_options'
 require 'puppet/provider/package'
 
 Puppet::Type.type(:package).provide :portsng,
@@ -324,7 +332,8 @@ Puppet::Type.type(:package).provide :portsng,
     return unless should
     is = properties[:package_settings]
     unless package_settings_insync?(should, is)
-      should.save(options_file, :pkgname => pkgname)
+      syntax = self.class.options_files_default_syntax
+      should.save(options_file, :pkgname => pkgname, :syntax => syntax)
     end
   end
   private :sync_package_settings
@@ -332,7 +341,8 @@ Puppet::Type.type(:package).provide :portsng,
   def revert_package_settings
     if (options = properties[:package_settings])
       debug "Reverting options in #{options_file}"
-      options.save(options_file, :pkgname => pkgname)
+      syntax = self.class.options_files_default_syntax
+      options.save(options_file, :pkgname => pkgname, :syntax => syntax)
     end
   end
   private :revert_package_settings
@@ -403,7 +413,7 @@ Puppet::Type.type(:package).provide :portsng,
   # caller.
   #
   def prepare_options(options, defaults, extra = [], deny = [])
-    return defaults unless options
+    return defaults.dup unless options
 
     # handle {option => value} hashes and flatten nested arrays
     options = options.collect do |x|
@@ -459,7 +469,7 @@ Puppet::Type.type(:package).provide :portsng,
 
   # uninstall already installed package
   def uninstall
-    cmd = uninstall_options << pkgname
+    cmd = uninstall_options + [pkgname]
     portuninstall(*cmd)
   end
 

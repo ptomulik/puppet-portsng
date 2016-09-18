@@ -1,10 +1,14 @@
 AllCops:
   Include:
-    - '**/Rakefile'
-    - '**/Gemfile'
-    - '**/Vagrantfile'
+    - 'Rakefile'
+    - 'Gemfile'
+    - 'Vagrantfile'
     - 'lib/**/*.rb'
     - 'spec/**/*.rb'
+  Exclude:
+    - 'pkg/**/*'
+    - 'vendor/**/*'
+    - 'spec/fixtures/**/*'
 Style/HashSyntax:
   EnforcedStyle: hash_rockets
 Style/Lambda:

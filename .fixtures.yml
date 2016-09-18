@@ -1,6 +1,6 @@
 fixtures:
   repositories:
-    backport_package_settings: "git://github.com/ptomulik/puppet-backport_package_settings.git"
+    backports: "git://github.com/ptomulik/puppet-backports.git"
     portsutil: "git://github.com/ptomulik/puppet-portsutil.git"
     vash:  "git://github.com/ptomulik/puppet-vash.git"
   symlinks:

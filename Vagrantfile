@@ -15,16 +15,17 @@
 
 Vagrant.configure(2) do |config|
   boxes = []
-  ['9.2', '9.3', '10.1', '10.2', '10.3'].map do |version|
+  versions = ['9.0', '9.1', '9.2', '9.3', '10.1', '10.2', '10.3']
+  versions.map do |version|
     ['amd64'].map do |arch|
       box = "freebsd-#{version}-#{arch}-ports"
       config.vm.define box, :autostart => false do |cfg|
         cfg.vm.hostname = "freebsd-#{version}"
         cfg.vm.box = "ptomulik/#{box}"
-        pkg_install = version == '9.2' ? 'pkg_add -r' : 'pkg install -y'
-        pkg_update = version == '9.2' ? '' : 'pkg update'
-        pkg_upgrade = version == '9.2' ? '' : 'pkg upgrade -y'
-        portsnap_update = if version == '9.2'
+        pkg_install = version =~ /9.[0-2]/ ? 'pkg_add -r' : 'pkg install -y'
+        pkg_update = version =~ /9.[0-2]/ ? '' : 'pkg update'
+        pkg_upgrade = version =~ /9.[0-2]/ ? '' : 'pkg upgrade -y'
+        portsnap_update = if version =~ /9.[0-2]/
                             ''
                           else
                             'portsnap --interactive fetch update'

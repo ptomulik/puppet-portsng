@@ -716,8 +716,9 @@ describe provider_class do
   describe 'when installing' do
     context 'and portupgrade is supposed to succeed' do
       before :each do
+        described_class.stubs(:options_files_default_syntax).returns(:thesyntax)
         ops = options_class[{ :FOO => true }]
-        ops.stubs(:save).once.with('/var/db/ports/bar_foo/options.local', :pkgname => 'foo-1.2.3')
+        ops.stubs(:save).once.with('/var/db/ports/bar_foo/options.local', :pkgname => 'foo-1.2.3', :syntax => :thesyntax)
         subject.stubs(:properties).returns(:package_settings => options_class[{ :FOO => false }])
         subject.stubs(:resource).returns(:name => 'bar/foo', :package_settings => ops)
         subject.stubs(:options_file).returns('/var/db/ports/bar_foo/options.local')
@@ -731,30 +732,37 @@ describe provider_class do
     end
 
     context 'and portupgrade fails' do
-      it 'should revert options and reraise' do
+      before :each do
+        described_class.stubs(:options_files_default_syntax).returns(:thesyntax)
         opts1 = options_class[{ :FOO => true }]
         opts2 = options_class[{ :FOO => false }]
-        opts1.stubs(:save).once.with('/var/db/ports/bar_foo/options.local', :pkgname => 'foo-2.4.5')
-        opts2.stubs(:save).once.with('/var/db/ports/bar_foo/options.local', :pkgname => 'foo-2.4.5')
+        opts1.stubs(:save).once.with('/var/db/ports/bar_foo/options.local', :pkgname => 'foo-2.4.5', :syntax => :thesyntax)
+        opts2.stubs(:save).once.with('/var/db/ports/bar_foo/options.local', :pkgname => 'foo-2.4.5', :syntax => :thesyntax)
         subject.stubs(:pkgname).returns('foo-2.4.5')
         subject.stubs(:properties).returns(:package_settings => opts1)
         subject.stubs(:resource).returns(:package_settings => opts2)
         subject.stubs(:options_file).returns('/var/db/ports/bar_foo/options.local')
         subject.stubs(:portupgrade).raises RuntimeError, 'go and revert options!'
+      end
+      it 'should revert options and reraise' do
         expect { subject.install }.to raise_error RuntimeError, 'go and revert options!'
       end
     end
+
     context 'and there is no such package' do
-      it 'should revert options and raise exception' do
+      before :each do
+        described_class.stubs(:options_files_default_syntax).returns(:thesyntax)
         opts1 = options_class[{ :FOO => true }]
         opts2 = options_class[{ :FOO => false }]
-        opts1.stubs(:save).once.with('/var/db/ports/bar_foo/options.local', :pkgname => 'foo-2.4.5')
-        opts2.stubs(:save).once.with('/var/db/ports/bar_foo/options.local', :pkgname => 'foo-2.4.5')
+        opts1.stubs(:save).once.with('/var/db/ports/bar_foo/options.local', :pkgname => 'foo-2.4.5', :syntax => :thesyntax)
+        opts2.stubs(:save).once.with('/var/db/ports/bar_foo/options.local', :pkgname => 'foo-2.4.5', :syntax => :thesyntax)
         subject.stubs(:pkgname).returns('foo-2.4.5')
         subject.stubs(:properties).returns(:package_settings => opts1)
         subject.stubs(:resource).returns(:name => 'bar/foo', :package_settings => opts2)
         subject.stubs(:options_file).returns('/var/db/ports/bar_foo/options.local')
         subject.stubs(:portupgrade).returns('** No such :package => bar/foo')
+      end
+      it 'should revert options and raise exception' do
         expect { subject.install }.to raise_error Puppet::ExecutionFailure, 'Could not find package bar/foo'
       end
     end
