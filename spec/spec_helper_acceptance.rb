@@ -1,7 +1,6 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'patches/lib'))
 require 'beaker-rspec'
 require 'beaker-rspec/helpers/serverspec'
-require 'specinfra_patch'
 
 # Install Puppet on all hosts
 hosts.each do |host|
