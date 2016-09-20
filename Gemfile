@@ -35,7 +35,7 @@ group :acceptance_tests do
   gem 'beaker', *location_for(ENV['BEAKER_VERSION'])
   gem 'serverspec', :require => false
   gem 'beaker-puppet_install_helper', :require => false
-  gem 'specinfra', '>= 2.63.0', :require => false
+  gem 'specinfra', '>= 2.63.0', :require => false if RUBY_VERSION >= '1.9'
 end
 
 gem 'puppet', *location_for(ENV['PUPPET_GEM_VERSION'])
