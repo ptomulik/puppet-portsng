@@ -1,6 +1,7 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'patches/lib'))
 require 'beaker-rspec'
 require 'beaker-rspec/helpers/serverspec'
+require 'specinfra_patch.rb' if RUBY_VERSION < '1.9'
 
 # Install Puppet on all hosts
 hosts.each do |host|
@@ -29,8 +30,8 @@ RSpec.configure do |c|
       puppet_version = Gem::Version.new(on(host, puppet('--version')).stdout)
       # Puppet < 2.7.14 has no "module" subcommand, and we need
       # "puppet-module" gem to install modules.
-      v2_7_14 = Gem::Version.new('2.7.14')
-      if puppet_version < v2_7_14
+      v2x7x14 = Gem::Version.new('2.7.14')
+      if puppet_version < v2x7x14
         gemglob = '/usr/local/lib/ruby/gems/*/gems/puppet-module*'
         pattern = 'http:\\/\\/\\(forge\\.puppetlabs\\.com\\)'
         host.shell 'gem install puppet-module'
@@ -40,10 +41,10 @@ RSpec.configure do |c|
       # Install dependencies
       moddeps = %w(portsutil backports)
       # The gem puppet-module does not seem to handle dependencies
-      moddeps << 'vash' if puppet_version < v2_7_14
+      moddeps << 'vash' if puppet_version < v2x7x14
       moddeps.each do |modname|
         mn = "ptomulik-#{modname}"
-        if puppet_version < v2_7_14
+        if puppet_version < v2x7x14
           moduledir = '/usr/local/etc/puppet/modules'
           host.shell "cd  #{moduledir} && puppet module install #{mn}"
         else

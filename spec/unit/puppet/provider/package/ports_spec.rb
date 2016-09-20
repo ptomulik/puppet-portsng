@@ -723,7 +723,7 @@ describe provider_class do
         subject.stubs(:resource).returns(:name => 'bar/foo', :package_settings => ops)
         subject.stubs(:options_file).returns('/var/db/ports/bar_foo/options.local')
         subject.stubs(:pkgname).returns('foo-1.2.3')
-        subject.stubs(:portupgrade).once.with(*%w(-N -M BATCH=yes bar/foo))
+        subject.stubs(:portupgrade).once.with('-N', '-M', 'BATCH=yes', 'bar/foo')
       end
 
       it "should use 'portupgrade -N -M BATCH=yes bar/foo'" do
@@ -852,14 +852,14 @@ describe provider_class do
       context 'and pkgng is inactive' do
         it "should call #portuninstall('-x', 'foo-1.2.3') once" do
           subject.stubs(:pkgng_active?).returns(false)
-          subject.expects(:portuninstall).once.with(*%w(-x foo-1.2.3))
+          subject.expects(:portuninstall).once.with('-x', 'foo-1.2.3')
           subject.uninstall
         end
       end
       context 'and pkgng is active' do
         it "should call #portuninstall('delete', '-x', 'foo-1.2.3') once" do
           subject.stubs(:pkgng_active?).returns(true)
-          subject.expects(:portuninstall).once.with(*%w(delete -x foo-1.2.3))
+          subject.expects(:portuninstall).once.with('delete', '-x', 'foo-1.2.3')
           subject.uninstall
         end
       end

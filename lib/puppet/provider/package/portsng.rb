@@ -240,7 +240,7 @@ Puppet::Type.type(:package).provide :portsng,
       var = instance_variable_get("@#{attr}".intern)
       unless var
         raise Puppet::Error,
-              "Attribute '#{attr}' not assigned for package '#{self.name}'."
+              "Attribute '#{attr}' not assigned for package '#{name}'."
       end
       var
     end
@@ -331,19 +331,17 @@ Puppet::Type.type(:package).provide :portsng,
   def sync_package_settings(should)
     return unless should
     is = properties[:package_settings]
-    unless package_settings_insync?(should, is)
-      syntax = self.class.options_files_default_syntax
-      should.save(options_file, :pkgname => pkgname, :syntax => syntax)
-    end
+    return if package_settings_insync?(should, is)
+    syntax = self.class.options_files_default_syntax
+    should.save(options_file, :pkgname => pkgname, :syntax => syntax)
   end
   private :sync_package_settings
 
   def revert_package_settings
-    if (options = properties[:package_settings])
-      debug "Reverting options in #{options_file}"
-      syntax = self.class.options_files_default_syntax
-      options.save(options_file, :pkgname => pkgname, :syntax => syntax)
-    end
+    return unless (options = properties[:package_settings])
+    debug "Reverting options in #{options_file}"
+    syntax = self.class.options_files_default_syntax
+    options.save(options_file, :pkgname => pkgname, :syntax => syntax)
   end
   private :revert_package_settings
 
@@ -483,13 +481,11 @@ Puppet::Type.type(:package).provide :portsng,
     when '>', '='
       result = oldversion
     when '<'
-      if (m = portinfo.match(/\((\w+) has (.+)\)/))
-        source, newversion = m[1, 2]
-        debug "Newer version in #{source}"
-        result = newversion
-      else
-        raise Puppet::Error, "Could not match version info #{portinfo.inspect}."
-      end
+      raise Puppet::Error, "Could not match version info #{portinfo.inspect}." \
+        unless (m = portinfo.match(/\((\w+) has (.+)\)/))
+      source, newversion = m[1, 2]
+      debug "Newer version in #{source}"
+      result = newversion
     when '?'
       warning "The installed package '#{pkgname}' does not appear in the " \
               'ports database nor does its port directory exist.'
