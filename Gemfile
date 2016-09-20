@@ -13,7 +13,7 @@ def location_for(place, fake_version = nil)
   end
 end
 
-group :development, :unit_tests do
+group :development, :test do
   # http://stackoverflow.com/questions/30928415/how-to-setup-puppet-rspec-correctly
   gem 'rspec', '~> 2.0' if RUBY_VERSION >= '1.8.7' && RUBY_VERSION < '1.9'
   if RUBY_VERSION >= '1.9'
@@ -30,7 +30,7 @@ group :development, :unit_tests do
   gem 'rubocop', :require => false if RUBY_VERSION >= '2.2.0'
 end
 
-group :acceptance_tests do
+group :acceptance do
   gem 'beaker-rspec', *location_for(ENV['BEAKER_RSPEC_VERSION'] || '>= 3.4')
   gem 'beaker', *location_for(ENV['BEAKER_VERSION'])
   gem 'serverspec', :require => false
