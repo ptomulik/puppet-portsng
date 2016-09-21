@@ -3,14 +3,14 @@
   "version": "0.2.1",
   "author": "ptomulik",
   "summary": "Ports provider for package resource type",
-  "license": "Apache License, Version 2.0",
+  "license": "Apache-2.0",
   "source": "git://github.com/ptomulik/puppet-portsng.git",
   "project_page": "https://github.com/ptomulik/puppet-portsng",
   "issues_url": "https://github.com/ptomulik/puppet-portsng/issues",
   "description": "Ports provider for package resource type",
   "dependencies": [
-    {"name":"ptomulik/portsutil","version_requirement":">= 0.1.3"},
-    {"name":"ptomulik/backports","version_requirement":">= 0.0.1"}
+    {"name":"ptomulik/portsutil","version_requirement":">= 0.1.3 < 2.0.0"},
+    {"name":"ptomulik/backports","version_requirement":">= 0.0.1 < 2.0.0"}
   ],
   "operatingsystem_support" : [
         { "operatingsystem" : "FreeBSD" }
