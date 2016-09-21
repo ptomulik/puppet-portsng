@@ -1,4 +1,5 @@
 2016-09-21 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * depend on specinfra >= 2.63.1
   * release 0.2.1
   * made corrections to metadata.json
   * reverted specinfra patch for ruby < 1.9
