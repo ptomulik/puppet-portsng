@@ -1,5 +1,5 @@
 # ptomulik-portsng
-
+[![Puppet Forge](https://img.shields.io/puppetforge/v/ptomulik/portsng.svg)](https://forge.puppet.com/ptomulik/portsng)
 [![Build Status](https://travis-ci.org/ptomulik/puppet-portsng.png?branch=master)](https://travis-ci.org/ptomulik/puppet-portsng)
 [![Coverage Status](https://coveralls.io/repos/ptomulik/puppet-portsng/badge.png?branch=master)](https://coveralls.io/r/ptomulik/puppet-portsng?branch=master)
 [![Code Climate](https://codeclimate.com/github/ptomulik/puppet-portsng/badges/gpa.svg)](https://codeclimate.com/github/ptomulik/puppet-portsng)
