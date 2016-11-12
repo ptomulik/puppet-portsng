@@ -1,3 +1,5 @@
+2016-11-12 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * adjust Gemfile a little
 2016-09-21 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * release 0.2.2
   * depend on specinfra >= 2.63.1

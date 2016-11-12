@@ -23,6 +23,7 @@ group :development, :test do
     gem 'highline', '< 1.7'
   end
   gem 'tins', '< 1.7.0' if RUBY_VERSION >= '1.9' && RUBY_VERSION < '2.0'
+  gem 'term-ansicolor', '< 1.4.0' if RUBY_VERSION >= '1.9' && RUBY_VERSION < '2.0'
   gem 'json_pure', '< 2.0.0' if RUBY_VERSION < '2.0'
   gem 'rspec-puppet'
   gem 'puppetlabs_spec_helper', :require => false
