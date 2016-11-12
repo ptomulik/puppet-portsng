@@ -1,6 +1,6 @@
 {
   "name": "ptomulik-portsng",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "author": "ptomulik",
   "summary": "Ports provider for package resource type",
   "license": "Apache-2.0",
