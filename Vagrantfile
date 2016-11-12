@@ -13,6 +13,7 @@
 #   vagrant ssh freebsd-10.3-amd64-ports # etc...
 ##############################################################################
 
+# rubocop: disable BlockLength
 Vagrant.configure(2) do |config|
   boxes = []
   versions = ['9.0', '9.1', '9.2', '9.3', '10.1', '10.2', '10.3']
@@ -55,3 +56,4 @@ Vagrant.configure(2) do |config|
     end
   end
 end
+# rubocop: enable BlockLength

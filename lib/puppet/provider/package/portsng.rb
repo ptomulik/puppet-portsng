@@ -9,6 +9,7 @@ require 'puppet/backport/type/package/package_settings'
 require 'puppet/backport/type/package/uninstall_options'
 require 'puppet/provider/package'
 
+# rubocop: disable BlockLength
 Puppet::Type.type(:package).provide :portsng,
                                     :parent => Puppet::Provider::Package do
   desc "Support for FreeBSD's ports. Note that this mixes packages and ports.
@@ -502,10 +503,11 @@ Puppet::Type.type(:package).provide :portsng,
     end
     result
   end
-  # rubocop: enable all
+  # rubocop: enable MethodLength, AbcSize, CyclomaticComplexity
 
   def query
     # support names, portorigin, pkgname and portname
     (inst = self.class.instances([name]).last) ? inst.properties : nil
   end
 end
+# rubocop: enable BlockLength

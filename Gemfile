@@ -22,8 +22,10 @@ group :development, :test do
     gem 'rake', '< 10.0'
     gem 'highline', '< 1.7'
   end
-  gem 'tins', '< 1.7.0' if RUBY_VERSION >= '1.9' && RUBY_VERSION < '2.0'
-  gem 'term-ansicolor', '< 1.4.0' if RUBY_VERSION >= '1.9' && RUBY_VERSION < '2.0'
+  if RUBY_VERSION >= '1.9' && RUBY_VERSION < '2.0'
+    gem 'tins', '< 1.7.0'
+    gem 'term-ansicolor', '< 1.4.0'
+  end
   gem 'json_pure', '< 2.0.0' if RUBY_VERSION < '2.0'
   gem 'rspec-puppet'
   gem 'puppetlabs_spec_helper', :require => false
@@ -33,7 +35,11 @@ end
 
 group :acceptance do
   gem 'beaker-rspec', *location_for(ENV['BEAKER_RSPEC_VERSION'] || '>= 3.4')
-  gem 'beaker', *location_for(ENV['BEAKER_VERSION'])
+  if RUBY_VERSION >= '1.9'
+    gem 'beaker', *location_for(ENV['BEAKER_VERSION'] || '>= 3.2.0')
+  else
+    gem 'beaker', *location_for(ENV['BEAKER_VERSION'])
+  end
   gem 'serverspec', :require => false
   gem 'beaker-puppet_install_helper', :require => false
   gem 'specinfra', '>= 2.63.1', :require => false if RUBY_VERSION >= '1.9'

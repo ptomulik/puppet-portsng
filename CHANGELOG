@@ -1,4 +1,5 @@
 2016-11-12 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * fixed issue #2 (we now depend on beaker >= 3.2.0)
   * release 1.0.0 (we're approved on forge.puppetlabs.com)
   * adjust Gemfile a little
 2016-09-21 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
