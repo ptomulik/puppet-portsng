@@ -1,6 +1,6 @@
 # ptomulik-portsng
 
-##Before anything
+## Before anything
 
 ```code
 bundle install --path vendor
@@ -12,13 +12,13 @@ If you don't plan running acceptance tests, then you may
 bundle install --path vendor --without 'acceptance_tests'
 ```
 
-##Running unit tests
+## Running unit tests
 
 ```console
 bundle exec rake spec
 ```
 
-##Running acceptance tests
+## Running acceptance tests
 
 ```console
 bundle exec rake beaker
