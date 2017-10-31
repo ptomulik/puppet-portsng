@@ -16,7 +16,7 @@
 # rubocop: disable BlockLength
 Vagrant.configure(2) do |config|
   boxes = []
-  versions = ['9.0', '9.1', '9.2', '9.3', '10.1', '10.2', '10.3']
+  versions = ['9.0', '9.1', '9.2', '9.3', '10.1', '10.2', '10.3', '11.0', '11.1', '12.0']
   versions.map do |version|
     ['amd64'].map do |arch|
       box = "freebsd-#{version}-#{arch}-ports"
