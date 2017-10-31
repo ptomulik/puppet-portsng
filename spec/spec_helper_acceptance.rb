@@ -6,7 +6,8 @@ require 'specinfra_patch.rb' if RUBY_VERSION < '1.9'
 # Install Puppet on all hosts
 hosts.each do |host|
   if host['platform'] =~ /freebsd/
-    default_puppet = host['platform'] =~ /9\.[0-1]/ ? 'puppet' : 'puppet37'
+    default_puppet = host['platform'] =~ /9\.[0-1]/ ? 'puppet' :
+                     (host['platform'] =~ /10\.[0-4]/ ? 'puppet4' : 'puppet5')
     # install_puppet does not work on FreeBSD (it uses sysutils/puppet port
     # which doesn't seem to exist)
     host.install_package(ENV['BEAKER_puppet'] || default_puppet)

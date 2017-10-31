@@ -1,3 +1,7 @@
+2017-10-31 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * changed default puppet versions for FreeBSD versions (acceptance tests)
+  * added support for FreeBSD 11.1 and 12.0 (acceptance tests)
+  * minor fixes to README's
 2016-11-12 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
   * release 1.0.1
   * fixed issue #2 (we now depend on beaker >= 3.2.0)

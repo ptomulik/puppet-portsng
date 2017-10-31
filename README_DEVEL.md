@@ -32,8 +32,20 @@ In addition, we support the following variables
   for example ``BEAKER_puppet="puppet37"``
 
 
-To run on different platforms, use the ``BEAKER_set`` variable, for example
+To run on different platforms, use
 
 ```console
-BEAKER_set=freebsd-9.2-amd64 bundle exec rake beaker
+bundle exec rake beaker:<platform-identifier>
+```
+
+for example
+
+```console
+bundle exec rake beaker:freebsd-12.0-amd64
+```
+
+Alternativelly, you may also set the ``BEAKER_set`` variable, for example
+
+```console
+BEAKER_set=freebsd-12.0-amd64 bundle exec rake beaker
 ```
