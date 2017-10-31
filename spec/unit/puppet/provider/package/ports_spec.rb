@@ -548,8 +548,9 @@ describe provider_class do
   end
 
   describe '#package_settings_validate(opts)' do
+    fixnum = (RUBY_VERSION < '2.4') ? 'Fixnum' : 'Integer'
     [
-      [123, ArgumentError, '123 of type Fixnum is not an options Hash (for $package_settings)'],
+      [123, ArgumentError, "123 of type #{fixnum} is not an options Hash (for $package_settings)"],
       [{ :FOO => true }, nil, nil],
       [{ 76 => false }, ArgumentError, '76 is not a valid option name (for $package_settings)'],
       [{ :FOO => 123 }, ArgumentError, '123 is not a valid option value (for $package_settings)']
