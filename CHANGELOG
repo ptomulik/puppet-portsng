@@ -1,4 +1,5 @@
 2017-10-31 Paweł Tomulik <ptomulik@meil.pw.edu.pl>
+  * release 1.1.0
   * changed default puppet versions for FreeBSD versions (acceptance tests)
   * added support for FreeBSD 11.1 and 12.0 (acceptance tests)
   * minor fixes to README's
