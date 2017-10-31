@@ -30,14 +30,14 @@ to it and fixing several existing issues. The new features include:
     installing, reinstalling and upgrading packages,
   * *uninstall_options* - extra CLI flags passed to
     [pkg_deinstall(1)](https://www.freebsd.org/cgi/man.cgi?query=pkg_deinstall&sektion=1)
-    (old [pkg](http://www.freebsd.org/doc/handbook/packages-using.html)
+    (the ancient [pkg](https://docs.freebsd.org/doc/9.0-RELEASE/usr/share/doc/freebsd/en/books/handbook/packages-using.html)
     toolstack) or [pkg delete](https://www.freebsd.org/cgi/man.cgi?query=pkg&sektion=8)
     ([pkgng](http://www.freebsd.org/doc/handbook/pkgng-intro.html)) when
     uninstalling packages,
   * *package_settings* - configuration options for package, the ones you
     usually set with ``make config``,
-  * works wit both the old
-    [pkg](http://www.freebsd.org/doc/handbook/packages-using.html) and new
+  * works wit both the ancient
+    [pkg](https://docs.freebsd.org/doc/9.0-RELEASE/usr/share/doc/freebsd/en/books/handbook/packages-using.html) and new
     [pkgng](http://www.freebsd.org/doc/handbook/pkgng-intro.html) package
     databases,
   * *upgradeable* (tested, the original puppet provider declared that it's
@@ -72,8 +72,8 @@ The [portversion](http://www.freebsd.org/cgi/man.cgi?query=portversion&manpath=p
 utility is used to find installed ports. It's better than using
 [pkg_info](http://www.freebsd.org/cgi/man.cgi?query=pkg_info&sektion=1) for
 several reasons. First, it is said to be faster, because it uses compiled
-version of ports INDEX file. Second, it works with both - the old
-[pkg](http://www.freebsd.org/doc/handbook/packages-using.html) database and the
+version of ports INDEX file. Second, it works with both - the ancient
+[pkg](https://docs.freebsd.org/doc/9.0-RELEASE/usr/share/doc/freebsd/en/books/handbook/packages-using.html) database and the
 new [pkgng](http://www.freebsd.org/doc/handbook/pkgng-intro.html) database,
 providing seamless interface to any of them. Third, it provides package names
 and their "out-of-date" statuses in a single call, so we don't need to
