@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/ptomulik/puppet-portsng/badge.png?branch=master)](https://coveralls.io/r/ptomulik/puppet-portsng?branch=master)
 [![Code Climate](https://codeclimate.com/github/ptomulik/puppet-portsng/badges/gpa.svg)](https://codeclimate.com/github/ptomulik/puppet-portsng)
 
-##<a id="table-of-contents"></a>Table of Contents
+## <a id="table-of-contents"></a>Table of Contents
 
 1. [Overview](#overview)
 2. [Module Description](#module-description)
@@ -16,12 +16,12 @@
 5. [Limitations](#limitations)
 6. [Development](#development)
 
-##<a id="overview"></a>Overview
+## <a id="overview"></a>Overview
 
 This is an enchanced __ports__ provider for package resource (FreeBSD). The
 module requires ``port-maintenance-tools`` to be installed on agent.
 
-##<a id="module-description"></a>Module Description
+## <a id="module-description"></a>Module Description
 
 The module re-implements puppet's __ports__ provider adding some new features
 to it and fixing several existing issues. The new features include:
@@ -83,7 +83,7 @@ separatelly check out-of-date status for installed packages. This version of
 
 [[Table of Contents](#table-of-contents)]
 
-####<a id="freebsd-ports-collection-and-its-terminology"></a>FreeBSD ports collection and its terminology
+#### <a id="freebsd-ports-collection-and-its-terminology"></a>FreeBSD ports collection and its terminology
 
 We use the following terminology when referring ports/packages:
 
@@ -99,7 +99,7 @@ Port *origins* are used as primary identifiers for *portsng* instances. It's rec
 
 [[Table of Contents](#table-of-contents)]
 
-####<a id="freebsd-ports-collection-and-ambiguity-of-portnames"></a>FreeBSD ports collection and ambiguity of portnames
+#### <a id="freebsd-ports-collection-and-ambiguity-of-portnames"></a>FreeBSD ports collection and ambiguity of portnames
 
 Using *portnames* (e.g. `apache22`) as package names in manifests is allowed.
 The *portname*s, however, are ambiguous, meaning that port search may find
@@ -117,9 +117,9 @@ Warning: Puppet::Type::Package::ProviderPorts: Found 3 ports named 'mysql-client
 
 [[Table of Contents](#table-of-contents)]
 
-##<a id="setup"></a>Setup
+## <a id="setup"></a>Setup
 
-###<a id="what-portsng-affects"></a>What portsng affects
+### <a id="what-portsng-affects"></a>What portsng affects
 
 * installs, upgrades, reinstalls and uninstalls packages,
 * modifies FreeBSD ports options' files `/var/db/ports/*/options.local` or
@@ -127,13 +127,13 @@ Warning: Puppet::Type::Package::ProviderPorts: Found 3 ports named 'mysql-client
 
 [[Table of Contents](#table-of-contents)]
 
-###<a id="setup-requirements"></a>Setup Requirements
+### <a id="setup-requirements"></a>Setup Requirements
 
 You may need to enable __pluginsync__ in your `puppet.conf`.
 
 [[Table of Contents](#table-of-contents)]
 
-###<a id="beginning-with-portsng"></a>Beginning with portsng
+### <a id="beginning-with-portsng"></a>Beginning with portsng
 
 Its usage is essentially same as for the original *ports* provider. Just select
 *portsng* as the package provider
@@ -144,7 +144,7 @@ Package { provider => portsng }
 
 Below I just put some examples specific to new features of *portsng*.
 
-####<a id="example-1---using-package_settings"></a>Example 1 - using *package_settings*
+#### <a id="example-1---using-package_settings"></a>Example 1 - using *package_settings*
 
 Ensure that www/apache22 is installed with SUEXEC:
 
@@ -156,7 +156,7 @@ package { 'www/apache22':
 
 [[Table of Contents](#table-of-contents)]
 
-####<a id="example-2---using-uninstall_options-to-cope-with-dependency-problems"></a> Example 2 - using *uninstall_options* to cope with dependency problems
+#### <a id="example-2---using-uninstall_options-to-cope-with-dependency-problems"></a> Example 2 - using *uninstall_options* to cope with dependency problems
 
 Sometimes freebsd package manager refuses to uninstall a package due to
 dependency problems that would appear after deinstallation. In such situations
@@ -182,7 +182,7 @@ package { 'www/apache22':
 
 [[Table of Contents](#table-of-contents)]
 
-####<a id="example-3---using-install_options"></a>Example 3 - using *install_options*
+#### <a id="example-3---using-install_options"></a>Example 3 - using *install_options*
 
 The new *portsng* provider implements *install_options* feature. The flags
 provided via *install_options* are passed to `portupgrade` command when
@@ -214,7 +214,7 @@ documentation.
 
 [[Table of Contents](#table-of-contents)]
 
-##<a id="troubleshooting"></a>Troubleshooting
+## <a id="troubleshooting"></a>Troubleshooting
 
 * puppet is unable to find information about not yet installed ports
 
@@ -268,7 +268,7 @@ documentation.
 
 [[Table of Contents](#table-of-contents)]
 
-##<a id="limitations"></a>Limitations
+## <a id="limitations"></a>Limitations
 
 * If there are several ports installed with same *portname* - for example
   `docbook` - then `puppet resource package docbook` will list only one of
@@ -283,7 +283,7 @@ documentation.
 
 [[Table of Contents](#table-of-contents)]
 
-##<a id="development"></a>Development
+## <a id="development"></a>Development
 The project is held at github:
 * [https://github.com/ptomulik/puppet-portsng](https://github.com/ptomulik/puppet-portsng)
 Issue reports, patches, pull requests are welcome!
