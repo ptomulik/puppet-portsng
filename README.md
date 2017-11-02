@@ -27,7 +27,7 @@ The module requires ``port-maintenance-tools`` to be installed on agent.
 
 ## <a id="module-description"></a>Module Description
 
-The module is an alternative for puppet's built-int __ports__ provider.
+The module is an alternative to puppet's built-int __ports__ provider.
 It provides additional features and is free of several issues found in the
 built-int __ports__ provider. For details see [remarks](#remarks).
 
