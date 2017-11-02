@@ -18,13 +18,201 @@
 
 ## <a id="overview"></a>Overview
 
-This is an enchanced __ports__ provider for package resource (FreeBSD). The
-module requires ``port-maintenance-tools`` to be installed on agent.
+This is an enhanced __ports__ provider for package resource (FreeBSD).
+[FreeBSD Ports and Packages Collection](https://www.freebsd.org/ports/)
+offers a simple way for users and administrators to install applications.
+This provider enables puppet to manage FreeBSD ports on agent OS.
+
+The module requires ``port-maintenance-tools`` to be installed on agent.
 
 ## <a id="module-description"></a>Module Description
 
-The module re-implements puppet's __ports__ provider adding some new features
-to it and fixing several existing issues. The new features include:
+The module is an alternative for puppet's built-int __ports__ provider.
+It provides additional features and is free of several issues found in the
+built-int __ports__ provider. For details see [remarks](#remarks).
+
+\[[Table of Contents](#table-of-contents)\]
+
+## <a id="setup"></a>Setup
+
+### <a id="what-portsng-affects"></a>What portsng affects
+
+* installs, upgrades, reinstalls and uninstalls packages,
+* modifies FreeBSD ports options' files `/var/db/ports/*/options.local` or
+  `/var/db/ports/*/options` (if really outdated ports tree is used).
+
+\[[Table of Contents](#table-of-contents)\]
+
+### <a id="setup-requirements"></a>Setup Requirements
+
+You may need to enable __pluginsync__ in your `puppet.conf`.
+
+\[[Table of Contents](#table-of-contents)\]
+
+### <a id="beginning-with-portsng"></a>Beginning with portsng
+
+Its usage is essentially same as for the original *ports* provider. Just select
+*portsng* as the package provider
+
+```puppet
+Package { provider => portsng }
+```
+
+Below I just put some examples specific to new features of *portsng*.
+
+#### <a id="example-1---using-package_settings"></a>Example 1 - using *package_settings*
+
+Use *package_settings* to ensure that appropriate compilation options are set
+for a port. Normally (without puppet) you would set these with ``make config``
+command. In the following example we ensure that ``www/apache22`` is installed
+with ``SUEXEC`` enabled:
+
+```puppet
+package { 'www/apache22':
+  package_settings => {'SUEXEC' => true}
+}
+```
+
+\[[Table of Contents](#table-of-contents)\]
+
+#### <a id="example-2---using-uninstall_options-to-cope-with-dependency-problems"></a> Example 2 - using *uninstall_options* to cope with dependency problems
+
+Sometimes, the FreeBSD package manager refuses to uninstall a package if there
+are other packages installed that depend on this one. In such situations we may
+use *uninstall_options* to (recursively) uninstall all the packages dependant
+on the one being uninstalled. If [pkgng](http://www.freebsd.org/doc/handbook/pkgng-intro.html)
+is used on FreeBSD as a package manager (default since 10.3), one has to write:
+
+```puppet
+package { 'www/apache22':
+  ensure => absent,
+  uninstall_options => ['-R','-y']
+}
+```
+
+When still using ports with ancient
+[pkg](https://docs.freebsd.org/doc/9.0-RELEASE/usr/share/doc/freebsd/en/books/handbook/packages-using.html)
+package manager one would write in its manifest:
+
+```puppet
+package { 'www/apache22':
+  ensure => absent,
+  uninstall_options => ['-r']
+}
+```
+
+\[[Table of Contents](#table-of-contents)\]
+
+#### <a id="example-3---using-install_options"></a>Example 3 - using *install_options*
+
+The new *portsng* provider implements *install_options* feature. The flags
+provided via *install_options* are passed to [portupgrade](https://www.freebsd.org/cgi/man.cgi?query=portupgrade)
+command when installing, reinstalling or upgrading packages. With no
+*install_options* provided, sensible defaults are selected by *portsng* provider.
+
+Let's say we want to install precompiled package, if available (`-P` flag).
+Write the following manifest:
+
+```puppet
+package { 'www/apache22':
+  ensure => present,
+  install_options => ['-P', '-M', {'BATCH' => 'yes'}]
+}
+```
+
+Now, if we run puppet, we'll see the command:
+
+```console
+~ # puppet agent -t --debug --trace
+...
+Debug: Executing '/usr/local/sbin/portupgrade -N -P -M BATCH=yes www/apache22'
+...
+```
+
+Note, that the *portsng* provider adds some flags by its own (`-N` in the above
+example). What is added/removed is preciselly stated in provider's generated
+documentation.
+
+\[[Table of Contents](#table-of-contents)\]
+
+## <a id="troubleshooting"></a>Troubleshooting
+
+* puppet is unable to find information about not yet installed ports
+
+  - try to run manually (as root)
+
+    ```console
+    ~ # make seach -C /usr/ports/misc/figlet
+    ```
+
+    if it prints something like "Please run make index", then follow that
+    advice. You may also check ``/usr/ports`` for ``INDEX-*`` files and if
+    they're absent, then regenerate index with ``make index``. Note, that
+    it may take a while.
+
+* portupgrade hangs when called from puppet (on some older FreeBSD versions)
+
+  - it may be the [script(1)](https://www.freebsd.org/cgi/man.cgi?script%281%29)
+    command hanging. You may try to run the following script to fix pkgtools
+
+    ```console
+    #!/bin/sh
+
+    set -e
+
+    # Fix for hanging "script -qa ... " in pkgtools.rb used by portupgrade
+    if [ -d '/usr/local/lib/ruby' ]; then
+      echo "/usr/local/lib/ruby is a directory";
+      for F in `find /usr/local/lib/ruby -name 'pkgtools.rb' -type f`; do
+        UNCHMOD=false;
+        echo "patching $F...";
+        test -w $F || (chmod u+w $F; UNCHMOD=true);
+        sed -e "s/\[script_path(), '-qa', file, \*args\]/[script_path(), '-t', '0', '-qa', file, \*args]/" \
+            -e "s/\['\/usr\/bin\/script', '-qa', file, \*args\]/['\/usr\/bin\/script', '-t', '0', '-qa', file, \*args]/" \
+            -i '' $F;
+        if $UNCHMOD; then chmod u-w $F; fi
+      done
+    fi
+    ```
+
+    The script may also be [downloaded from github](https://raw.githubusercontent.com/ptomulik/puppet-portsng/master/.fixes/fix-hanging-pkgtools.sh)
+
+* installation fails with error message
+
+  ```console
+  /usr/local/sbin/portupgrade:569:in `chdir': HOME/LOGDIR not set (ArgumentError)
+  ```
+
+  - this is caused by portupgrade v. 2.4.10.X, see
+    [FreeBSD Bug #175281](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=175281),
+  - install another version of portupgrade to fix this.
+
+\[[Table of Contents](#table-of-contents)\]
+
+## <a id="limitations"></a>Limitations
+
+* If there are several ports installed with same *portname* - for example
+  `docbook` - then `puppet resource package docbook` will list only one of
+  them (the last one from `portversion`s list - usually the most recent). It is
+  so, because `portsng` uses *portorigins* to identify its instances (as `name`
+  paramateter). None of the existing `instances` is identified by `puppet` as
+  an instance of `docbook` and `puppet` falls back to use provider's `query`
+  method. But `query` handles only one package per name (in this case the last
+  one from *portversion*'s list if chosen). This is an issue, which will not
+  probably be fixed, so you're encouraged to use *portorigins*.
+
+## <a id="remarks"></a>Remarks
+
+### <a id="how-it-corresponds"></a> How it corresponds to the puppet's built-in __ports__ provider
+
+Main motivation for this module being developed was that the puppet's
+built-in __ports__ provider had several defects and missing features at time of
+this writing. By implementing it from scratch, I hoped (and, I think, managed)
+to provide all these missing features and to release a module free of all the
+bugs (and misconceptions) I found in the built-in one. So below is short
+description of what was achieved.
+
+The new features include:
 
   * *install_options* - extra CLI flags passed to *portupgrade* when
     installing, reinstalling and upgrading packages,
@@ -81,7 +269,7 @@ separatelly check out-of-date status for installed packages. This version of
 *portsng* works with old *pkg* database as well as with *pkgng*, using
 *portversion*.
 
-[[Table of Contents](#table-of-contents)]
+\[[Table of Contents](#table-of-contents)\]
 
 #### <a id="freebsd-ports-collection-and-its-terminology"></a>FreeBSD ports collection and its terminology
 
@@ -97,7 +285,7 @@ See [http://www.freebsd.org/doc/en/books/porters-handbook/makefile-naming.html](
 
 Port *origins* are used as primary identifiers for *portsng* instances. It's recommended to use *portorigins* instead of *portnames* as package names in manifest files.
 
-[[Table of Contents](#table-of-contents)]
+\[[Table of Contents](#table-of-contents)\]
 
 #### <a id="freebsd-ports-collection-and-ambiguity-of-portnames"></a>FreeBSD ports collection and ambiguity of portnames
 
@@ -115,173 +303,7 @@ warning:
 Warning: Puppet::Type::Package::ProviderPorts: Found 3 ports named 'mysql-client': 'databases/mysql51-client', 'databases/mysql55-client', 'databases/mysql56-client'. Only 'databases/mysql56-client' will be ensured.
 ```
 
-[[Table of Contents](#table-of-contents)]
-
-## <a id="setup"></a>Setup
-
-### <a id="what-portsng-affects"></a>What portsng affects
-
-* installs, upgrades, reinstalls and uninstalls packages,
-* modifies FreeBSD ports options' files `/var/db/ports/*/options.local` or
-  `/var/db/ports/*/options` (if really outdated ports tree is used).
-
-[[Table of Contents](#table-of-contents)]
-
-### <a id="setup-requirements"></a>Setup Requirements
-
-You may need to enable __pluginsync__ in your `puppet.conf`.
-
-[[Table of Contents](#table-of-contents)]
-
-### <a id="beginning-with-portsng"></a>Beginning with portsng
-
-Its usage is essentially same as for the original *ports* provider. Just select
-*portsng* as the package provider
-
-```puppet
-Package { provider => portsng }
-```
-
-Below I just put some examples specific to new features of *portsng*.
-
-#### <a id="example-1---using-package_settings"></a>Example 1 - using *package_settings*
-
-Ensure that www/apache22 is installed with SUEXEC:
-
-```puppet
-package { 'www/apache22':
-  package_settings => {'SUEXEC' => true}
-}
-```
-
-[[Table of Contents](#table-of-contents)]
-
-#### <a id="example-2---using-uninstall_options-to-cope-with-dependency-problems"></a> Example 2 - using *uninstall_options* to cope with dependency problems
-
-Sometimes freebsd package manager refuses to uninstall a package due to
-dependency problems that would appear after deinstallation. In such situations
-we may use the `uninstall_options` to instruct the provider to uninstall also
-all packages that depend on the package being uninstalled. When using ports
-with old *pkg* package manager one would write in its manifest:
-
-```puppet
-package { 'www/apache22':
-  ensure => absent,
-  uninstall_options => ['-r']
-}
-```
-
-For *pkgng* one has to write:
-
-```puppet
-package { 'www/apache22':
-  ensure => absent,
-  uninstall_options => ['-R','-y']
-}
-```
-
-[[Table of Contents](#table-of-contents)]
-
-#### <a id="example-3---using-install_options"></a>Example 3 - using *install_options*
-
-The new *portsng* provider implements *install_options* feature. The flags
-provided via *install_options* are passed to `portupgrade` command when
-installing, reinstalling or upgrading packages. With no *install_options*
-provided, sensible defaults are selected by *portsng* provider.
-
-Let's say we want to install precompiled package, if available (`-P` flag).
-Write the following manifest:
-
-```puppet
-package { 'www/apache22':
-  ensure => present,
-  install_options => ['-P', '-M', {'BATCH' => 'yes'}]
-}
-```
-
-Now, if we run puppet, we'll see the command:
-
-```console
-~ # puppet agent -t --debug --trace
-...
-Debug: Executing '/usr/local/sbin/portupgrade -N -P -M BATCH=yes www/apache22'
-...
-```
-
-Note, that the *portsng* provider adds some flags by its own (`-N` in the above
-example). What is added/removed is preciselly stated in provider's generated
-documentation.
-
-[[Table of Contents](#table-of-contents)]
-
-## <a id="troubleshooting"></a>Troubleshooting
-
-* puppet is unable to find information about not yet installed ports
-
-  - try to run manually (as root)
-
-    ```console
-    ~ # make seach -C /usr/ports/misc/figlet
-    ```
-
-    if it prints something like "Please run make index", then follow that
-    advice. You may also check ``/usr/ports`` for ``INDEX-*`` files and if
-    they're absent, then regenerate index with ``make index``. Note, that
-    it may take a while.
-
-* portupgrade hangs when called from puppet (on some older FreeBSD versions)
-
-  - it may be the [script(1)](https://www.freebsd.org/cgi/man.cgi?script%281%29)
-    command hanging. You may try to run the following script to fix pkgtools
-
-    ```console
-    #!/bin/sh
-
-    set -e
-
-    # Fix for hanging "script -qa ... " in pkgtools.rb used by portupgrade
-    if [ -d '/usr/local/lib/ruby' ]; then
-      echo "/usr/local/lib/ruby is a directory";
-      for F in `find /usr/local/lib/ruby -name 'pkgtools.rb' -type f`; do
-        UNCHMOD=false;
-        echo "patching $F...";
-        test -w $F || (chmod u+w $F; UNCHMOD=true);
-        sed -e "s/\[script_path(), '-qa', file, \*args\]/[script_path(), '-t', '0', '-qa', file, \*args]/" \
-            -e "s/\['\/usr\/bin\/script', '-qa', file, \*args\]/['\/usr\/bin\/script', '-t', '0', '-qa', file, \*args]/" \
-            -i '' $F;
-        if $UNCHMOD; then chmod u-w $F; fi
-      done
-    fi
-    ```
-
-    The script may also be [downloaded from github](https://raw.githubusercontent.com/ptomulik/puppet-portsng/master/.fixes/fix-hanging-pkgtools.sh)
-
-* installation fails with error message
-
-  ```console
-  /usr/local/sbin/portupgrade:569:in `chdir': HOME/LOGDIR not set (ArgumentError)
-  ```
-
-  - this is caused by portupgrade v. 2.4.10.X, see
-    [FreeBSD Bug #175281](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=175281),
-  - install another version of portupgrade to fix this.
-
-[[Table of Contents](#table-of-contents)]
-
-## <a id="limitations"></a>Limitations
-
-* If there are several ports installed with same *portname* - for example
-  `docbook` - then `puppet resource package docbook` will list only one of
-  them (the last one from `portversion`s list - usually the most recent). It is
-  so, because `portsng` uses *portorigins* to identify its instances (as `name`
-  paramateter). None of the existing `instances` is identified by `puppet` as
-  an instance of `docbook` and `puppet` falls back to use provider's `query`
-  method. But `query` handles only one package per name (in this case the last
-  one from *portversion*'s list if chosen). This is an issue, which will not
-  probably be fixed, so you're encouraged to use *portorigins*.
-
-
-[[Table of Contents](#table-of-contents)]
+\[[Table of Contents](#table-of-contents)\]
 
 ## <a id="development"></a>Development
 The project is held at github:
