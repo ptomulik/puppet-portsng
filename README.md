@@ -214,8 +214,9 @@ description of what was achieved.
 
 The new features include:
 
-  * *install_options* - extra CLI flags passed to *portupgrade* when
-    installing, reinstalling and upgrading packages,
+  * *install_options* - extra CLI flags passed to
+    [portupgrade(1)](https://www.freebsd.org/cgi/man.cgi?query=portupgrade)
+    when installing, reinstalling and upgrading packages,
   * *uninstall_options* - extra CLI flags passed to
     [pkg_deinstall(1)](https://www.freebsd.org/cgi/man.cgi?query=pkg_deinstall&sektion=1)
     (the ancient [pkg](https://docs.freebsd.org/doc/9.0-RELEASE/usr/share/doc/freebsd/en/books/handbook/packages-using.html)
